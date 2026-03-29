@@ -19,7 +19,7 @@ Dans le cadre de ce projet, nous utilisons deux jeux de données complémentaire
 
 ## Dataset 1 : Video Game Sales (Rush Kirubi)
 
-Ce dataset combine des données de ventes issues de **VGChartz** et des scores/avis issus de **Metacritic**.  
+Ce dataset combine des données de ventes issues de [**VGChartz**](https://www.vgchartz.com/) et des scores/avis issus de [**Metacritic**](https://www.metacritic.com/).  
 
 Il est important de noter que le fichier date du **22 décembre 2016**, et ne contient donc pas des données récentes.
 
@@ -78,7 +78,7 @@ Ces dimensions structurent fortement les analyses possibles.
 
 ## Dataset 2 : Speedrun.com Dataset
  
-Ce dataset recense les **jeux référencés sur Speedrun.com**, la plateforme de référence pour le speedrunning. Il fournit pour chaque jeu des métadonnées générales ainsi que des indicateurs d'activité communautaire (nombre de runs soumises, nombre de joueurs actifs).
+Ce dataset recense les jeux référencés sur [**Speedrun.com**](https://www.speedrun.com/), la plateforme de référence pour le speedrunning. Il fournit pour chaque jeu des métadonnées générales ainsi que des indicateurs d'activité communautaire (nombre de runs soumises, nombre de joueurs actifs).
  
 Le fichier est un **CSV** (*games-data.csv*), de dimension **(44 122 × 9)**.
  
