@@ -134,5 +134,144 @@ Pour exploiter pleinement la complémentarité de nos deux sources, il sera néc
 
 Cependant, cette jointure ne sera pas immédiate : les noms de jeux peuvent varier d'un dataset à l'autre en raison de différences de formatage, d'abréviations, de suffixes de version ou encore de conventions d'écriture propres à chaque source. Par exemple, un jeu nommé *"Super Mario Bros."* dans le dataset de ventes pourrait apparaître comme *"Super Mario Bros"* (sans point) ou *"Super Mario Brothers"* sur Speedrun.com. Un travail de **normalisation des noms** sera donc indispensable avant toute analyse croisée, afin de maximiser le nombre de correspondances fiables entre les deux tables.
 
-
 Ce processus de nettoyage conditionnera directement la qualité et la fiabilité des analyses croisant performances commerciales et activité communautaire.
+
+# Plan d’analyse
+
+Notre plan d’analyse vise à étudier le jeu vidéo sous deux angles complémentaires : son **succès commercial** et son **engagement communautaire à travers la discipline du speedrunning**.  
+
+L’idée, dans le cadre de ce projet d'analyse, n’est pas seulement d’identifier les jeux qui se vendent le mieux, mais aussi de comprendre quels types de jeux suscitent une forte activité de la part des joueurs, parfois indépendamment de leurs performances économiques.
+
+Nous découperons donc notre analyse en plusieurs axes.
+
+---
+
+## 1. Analyse descriptive du marché du jeu vidéo
+
+Dans un premier temps, nous étudierons uniquement le dataset **Video Game Sales** afin de dégager les grandes tendances du marché du jeu vidéo, en gardant à l’esprit que ces données s’arrêtent au **22 décembre 2016**, date de mise à jour du dataset.
+
+Nous chercherons notamment à répondre aux questions suivantes :
+
+- Quelles **plateformes** ont généré le plus de ventes à l’échelle mondiale ?
+- Quels sont les **genres** de jeux vidéo qui génèrent le plus de ventes ?
+- Quelle région (**Amérique du Nord**, **Europe**, **Japon**, **autres régions**) contribue le plus aux ventes de jeux vidéo ?
+- Observe-t-on des différences régionales dans les préférences de **plateformes** ou de **genres** ?
+- Quels jeux sont sortis sur le **plus grand nombre de plateformes** ?
+
+Cette première partie reposera principalement sur les variables `Platform`, `Genre`, `Name`, `NA_Sales`, `EU_Sales`, `JP_Sales`, `Other_Sales` et `Global_Sales`.
+
+L’objectif sera ici de dresser un portrait global du marché à l’aide de classements, d’agrégations et de visualisations simples.
+
+---
+
+## 2. Analyse descriptive de l’activité speedrun
+
+Dans un second temps, nous analyserons uniquement le dataset **Speedrun.com** afin de mieux comprendre la structure de la communauté de speedrunning.
+
+Nous nous poserons notamment les questions suivantes :
+
+- Quels jeux comptent le plus de **runs** ?
+- Quels jeux attirent le plus de **joueurs actifs** ?
+- Les jeux les plus anciens sont-ils davantage représentés dans la communauté speedrun que les jeux récents ?
+
+Cette partie s’appuiera principalement sur les variables `gameName`, `releaseDate`, `addedDate`, `runCount` et `playerCount`.
+
+Nous chercherons ici à dégager des tendances générales sur la pratique du speedrunning, notamment :
+
+- la **popularité** de certains jeux au sein de la communauté.
+- le lien entre **l’ancienneté d’un jeu** et son niveau d’activité dans la communauté.
+
+---
+
+## 3. Croisement entre ventes et activité communautaire
+
+Cette partie constitue le cœur du projet, car elle permettra de relier les deux jeux de données sélectionnés.
+
+Nous chercherons à déterminer si les jeux les plus vendus sont également ceux qui génèrent le plus d’activité sur Speedrun.com, ou si certains jeux deviennent des références dans la communauté sans avoir nécessairement connu un grand succès commercial.
+
+Les principales questions seront les suivantes :
+
+- Les jeux les plus vendus sont-ils aussi ceux qui ont le plus de **runs** ?
+- Existe-t-il une relation entre les **ventes globales**  et le nombre de **joueurs impliqués** dans la communauté speedrun ?
+- Certains jeux peu vendus deviennent-ils néanmoins très importants dans le speedrunning ? Et à l'inverse ?
+
+Pour cela, il sera nécessaire d’effectuer une **jointure entre les deux datasets** à partir du **nom** des jeux, après un travail de **normalisation** (gestion des différences d’écriture, ponctuation, versions, etc.).
+
+Cette étape permettra d’identifier plusieurs profils de jeux :
+
+- les jeux à **fort succès commercial et forte activité communautaire**.
+- les jeux à **fort succès commercial mais faible activité speedrun**.
+- les jeux à **faible succès commercial mais forte activité communautaire**, pouvant être considérés comme des jeux “cultes”.
+- les jeux à **faible succès commercial et faible activité**, moins marquants à la fois économiquement et communautairement.
+
+---
+
+## 4. Analyse par sous-groupes : genres et plateformes
+
+Une fois les données croisées, nous approfondirons l’analyse en étudiant certains sous-groupes.
+
+Nous chercherons par exemple à répondre aux questions suivantes :
+
+- Quels **genres** de jeux attirent le plus les speedrunners (en termes de run ou joueurs impliqués) ?
+- Certaines **plateformes** sont-elles davantage associées à des jeux speedrunnés ?
+- Les jeux sortis sur de nombreuses plateformes ont-ils davantage de chances d’être speedrunnés ?
+- Certains genres se vendent-ils très bien sans pour autant générer une forte activité communautaire ?
+
+Cette partie permettra de dépasser la simple comparaison “ventes vs runs” et d’identifier des tendances plus fines selon la nature des jeux et leurs caractéristiques.
+
+---
+
+## 5. Ce que nous espérons montrer
+
+À travers ce projet, nous espérons montrer que la popularité d’un jeu vidéo ne se mesure pas uniquement par ses ventes. En effet, un jeu peut être un immense succès commercial sans pour autant marquer durablement une communauté compétitive, tandis qu’un autre peut devenir une référence du speedrunning malgré des ventes plus modestes.
+
+Nous souhaitons ainsi mettre en évidence :
+
+- les jeux qui cumulent **succès économique** et **fort engagement communautaire**.
+- les jeux qui doivent leur notoriété davantage à leur **communauté** qu’à leurs ventes.
+- les caractéristiques des jeux qui semblent favoriser la pratique du speedrunning.
+
+---
+
+## 6. Difficultés et limites attendues
+
+### Jointure des deux datasets
+
+Le principal défi sera de faire correspondre les jeux entre les deux sources via leurs noms. En effet, de nombreuses différences peuvent exister :
+
+- différences d’écriture.
+- présence ou absence de ponctuation.
+- abréviations ou noms alternatifs.
+- versions ou éditions différentes d’un même jeu.
+- distinctions liées aux plateformes.
+
+Un travail de normalisation sera donc indispensable afin d’obtenir un maximum de correspondances fiables entre les deux datasets.
+
+---
+
+### Différence d’unité d’observation
+
+Dans le **dataset de ventes**, une observation correspond à un couple **(jeu, plateforme)**, tandis que dans le **dataset Speedrun.com**, une observation correspond à un **jeu unique**.
+
+Cela peut introduire des biais et nécessitera une harmonisation préalable des données avant toute comparaison.
+
+---
+
+### Données incomplètes ou limitées
+
+Certaines limites sont liées directement aux datasets utilisés :
+
+- le dataset de ventes s’arrête en **2016**, ce qui exclut les jeux récents.
+- certaines variables présentent des **valeurs manquantes** (notamment les scores dans le dataset de ventes).
+
+---
+
+### Distribution très déséquilibrée
+
+L’activité de speedrun est fortement concentrée sur un petit nombre de jeux très populaires, tandis que la majorité des jeux ont très peu de runs.
+
+Cela peut rendre certaines analyses globales moins représentatives et nécessitera une interprétation prudente des résultats.
+
+Certaines variables du dataset de ventes contiennent de nombreuses valeurs manquantes, notamment pour les scores critiques et utilisateurs. Cela pourra limiter certaines analyses complémentaires.
+
+---
