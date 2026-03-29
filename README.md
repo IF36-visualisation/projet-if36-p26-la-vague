@@ -1,3 +1,81 @@
+# Introduction
+
+Qui n’a jamais débattu avec ses amis pour savoir quel jeu vidéo est le meilleur de tous les temps ? Entre les fans de LOL *(quelle idée…)*, les nostalgiques de Mario et les adeptes de Minecraft, les opinions sont souvent… très tranchées.  
+
+Mais le jeu vidéo ne se résume pas uniquement à ses ventes : derrière chaque succès commercial se cache aussi une communauté de joueurs, parfois très engagée. Certains terminent un jeu… d’autres cherchent à le finir le plus vite possible.
+
+Dans ce projet, nous avons choisi de croiser deux aspects complémentaires du jeu vidéo :
+
+- les **performances commerciales** avec le dataset **Video Game Sales** ;
+- l’**activité compétitive et communautaire** avec le dataset **Speedrun.com Data**, qui recense les records, les joueurs et les catégories de speedrun.
+
+L’objectif est de ne pas se limiter à une vision économique du jeu vidéo, mais d’explorer également l’engagement des joueurs. En combinant ces deux sources, nous cherchons à comprendre si les jeux les plus vendus sont aussi ceux qui génèrent le plus d’activité dans la communauté, ou si, au contraire, certains jeux deviennent cultes indépendamment de leur succès commercial.
+
+---
+
+# Données
+
+Dans le cadre de ce projet, nous utilisons deux jeux de données complémentaires afin d’analyser à la fois le **succès commercial** des jeux vidéo et leur **engagement au sein de la communauté**.
+
+## Dataset 1 : Video Game Sales (Rush Kirubi)
+
+Ce dataset combine des données de ventes issues de **VGChartz** et des scores/avis issus de **Metacritic**.  
+
+Il est important de noter que le fichier date du **22 décembre 2016**, et ne contient donc pas des données récentes.
+
+Le fichier principal est un **CSV** (*Video_Games_Sales_as_at_22_Dec_2016.csv*), de dimension **(16 719 × 16)**.  
+
+Cependant, le jeu de données présente de nombreuses valeurs manquantes, notamment pour les variables liées aux scores utilisateurs. En effet, la plateforme Metacritic ne couvre pas toutes les plateformes présentes dans le dataset. Ainsi, environ **9 600 observations** disposent de données complètes.
+
+---
+
+### Dictionnaire de variables et qualité attendue
+
+| Colonne           | Nature                                   | Type    | % NA   | Uniques | Exemples                          |
+|-------------------|------------------------------------------|---------|--------|---------|-----------------------------------|
+| Name              | qualitative nominale (texte)             | object  | 0.02%  | 11 563  | Wii Sports; Super Mario Bros.      |
+| Platform          | qualitative nominale (catégorie)         | object  | 0.00%  | 31      | Wii; NES                          |
+| Year_of_Release   | quantitative discrète (année)            | float64 | 1.61%  | —       | 2006.0; 1985.0                    |
+| Genre             | qualitative nominale (catégorie)         | object  | 0.02%  | 12      | Sports; Platform                  |
+| Publisher         | qualitative nominale (catégorie)         | object  | 0.32%  | 582     | Nintendo                          |
+| NA_Sales          | quantitative continue (millions)         | float64 | 0.00%  | —       | 41.36; 29.08                      |
+| EU_Sales          | quantitative continue (millions)         | float64 | 0.00%  | —       | 28.96; 3.58                       |
+| JP_Sales          | quantitative continue (millions)         | float64 | 0.00%  | —       | 3.77; 6.81                        |
+| Other_Sales       | quantitative continue (millions)         | float64 | 0.00%  | —       | 8.45; 0.77                        |
+| Global_Sales      | quantitative continue (millions)         | float64 | 0.00%  | —       | 82.53; 40.24                      |
+| Critic_Score      | quantitative discrète (0–100)            | float64 | 51.33% | —       | 76.0; 82.0                        |
+| Critic_Count      | quantitative discrète (compte)           | float64 | 51.33% | —       | 51.0; 73.0                        |
+| User_Score        | quantitative continue (0–10 + "tbd")     | object  | 40.10% | 96      | 8; 8.3; tbd                       |
+| User_Count        | quantitative discrète (compte)           | float64 | 54.60% | —       | 322.0; 709.0                      |
+| Developer         | qualitative nominale (catégorie)         | object  | 39.61% | 1 696   | Nintendo                          |
+| Rating            | qualitative (catégorie ESRB)             | object  | 40.49% | 8       | E                                 |
+
+---
+
+### Remarques
+
+- Les scores critiques de Metacritic sont sur une échelle de 0 à 100  
+- De nombreuses données liées aux scores sont manquantes, mais le volume restant reste suffisant pour mener des analyses pertinentes
+- Les variables **User_Score** et **Year_of_Release** contiennent des valeurs non numériques (*tbd*, *N/A*), nécessitant un nettoyage préalable
+- Chaque ligne correspond à un **jeu sur une plateforme donnée**. Ainsi, un même jeu peut apparaître plusieurs fois, ce qui peut biaiser certaines analyses si l’on ne précise pas l’unité d’étude
+- Les noms de développeurs, éditeurs ou plateformes peuvent présenter des variations (abréviations, doublons), ce qui nécessite un travail de normalisation, notamment pour le croisement avec d’autres datasets
+
+---
+
+### Unité d’observation et sous-groupes
+
+L’unité d’observation est le couple **(jeu, plateforme)** : un même titre peut apparaître plusieurs fois s’il est sorti sur différentes plateformes.
+
+Cela permet de définir plusieurs sous-groupes :
+
+- **Plateforme** (≈ 31 plateformes)  
+- **Genre** (≈ 12 catégories)  
+- **Région de vente** (NA, EU, JP, Other)  
+- **Rating ESRB** (classification par âge)  
+
+Ces dimensions structurent fortement les analyses possibles.
+
+
 ## Dataset 2 : Speedrun.com Dataset
  
 Ce dataset recense les **jeux référencés sur Speedrun.com**, la plateforme de référence pour le speedrunning. Il fournit pour chaque jeu des métadonnées générales ainsi que des indicateurs d'activité communautaire (nombre de runs soumises, nombre de joueurs actifs).
