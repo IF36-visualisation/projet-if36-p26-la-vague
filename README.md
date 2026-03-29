@@ -1,3 +1,17 @@
+# Table des matières
+
+- [Introduction](#introduction)
+- [Données](#données)
+  - [Dataset 1 : Video Game Sales](#dataset-1--video-game-sales-rush-kirubi)
+  - [Dataset 2 : Speedrun.com Dataset](#dataset-2--speedruncom-dataset)
+- [Plan d’analyse](#plan-danalyse)
+  - [1. Analyse descriptive du marché du jeu vidéo](#1-analyse-descriptive-du-marché-du-jeu-vidéo)
+  - [2. Analyse descriptive de l’activité speedrun](#2-analyse-descriptive-de-lactivité-speedrun)
+  - [3. Croisement entre ventes et activité communautaire](#3-croisement-entre-ventes-et-activité-communautaire)
+  - [4. Analyse par sous-groupes](#4-analyse-par-sous-groupes--genres-et-plateformes)
+  - [5. Ce que nous espérons montrer](#5-ce-que-nous-espérons-montrer)
+  - [6. Difficultés et limites attendues](#6-difficultés-et-limites-attendues)
+  
 # Introduction
 
 Qui n’a jamais débattu avec ses amis pour savoir quel jeu vidéo est le meilleur de tous les temps ? Entre les fans de LOL *(quelle idée…)*, les nostalgiques de Mario et les adeptes de Minecraft, les opinions sont souvent… très tranchées.  
