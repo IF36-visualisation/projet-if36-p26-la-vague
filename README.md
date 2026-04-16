@@ -91,64 +91,124 @@ Ces dimensions structurent fortement les analyses possibles.
 
 
 ## Dataset 2 : Speedrun.com Dataset
- 
-Ce dataset recense les jeux référencés sur [**Speedrun.com**](https://www.speedrun.com/), la plateforme de référence pour le speedrunning. Il fournit pour chaque jeu des métadonnées générales ainsi que des indicateurs d'activité communautaire (nombre de runs soumises, nombre de joueurs actifs).
- 
-Le fichier est un **CSV** (*games-data.csv*), de dimension **(44 122 × 9)**.
- 
-Le dataset couvre des jeux dont les dates de sortie s'étendent de **1971 à 2026** (dates futures correspondant à des jeux annoncés), et dont l'ajout sur la plateforme Speedrun.com s'échelonne de **fin 2014 à début 2025**.
- 
+
+Ce dataset recense les jeux référencés sur [**Speedrun.com**](https://www.speedrun.com/), la plateforme de référence pour le speedrunning. Il fournit pour chaque jeu des métadonnées générales ainsi que l'ensemble des runs validées et classées sur la plateforme.
+
+Le dataset est composé de **4 fichiers CSV** reliés entre eux par des identifiants communs :
+
+| Fichier                 | Dimensions      | Unité d'observation | Description                                                          |
+|-------------------------|-----------------|---------------------|----------------------------------------------------------------------|
+| *games-data.csv*        | (43 663 × 6)    | Jeu                 | Métadonnées de chaque jeu référencé sur Speedrun.com                 |
+| *leaderboards-data.csv* | (2 232 884 × 3) | Run classée         | Runs validées et classées sur les leaderboards                       |
+| *platforms-data.csv*    | (213 × 3)       | Plateforme          | Table de référence des plateformes (consoles, PC, supports mobiles)  |
+| *genres-data.csv*       | (2 380 × 2)     | Genre               | Table de référence des genres de jeu                                 |
+
+Le dataset couvre des jeux dont les dates de sortie s'étendent de **1971 à 2026** (dates futures correspondant à des jeux annoncés), et dont l'ajout sur la plateforme Speedrun.com s'échelonne de **fin 2014 à début 2025**. Les runs enregistrées couvrent la période **2012-2025**.
+
 ---
- 
-### Dictionnaire de variables
- 
-| Colonne       | Nature                                      | Type   | % NA  | Uniques | Exemples                                    |
-|---------------|---------------------------------------------|--------|-------|---------|---------------------------------------------|
-| gameId        | qualitative nominale (identifiant unique)   | string | 0.00% | 43 622  | k6qqkx6g ; 3dx2pk41                         |
-| gameName      | qualitative nominale (texte)                | string | 0.00% | 43 602  | Super Mario 64 ; Celeste                    |
-| url           | qualitative nominale (slug URL)             | string | 0.00% | 43 622  | sm64 ; celeste                              |
-| type          | qualitative nominale (catégorie)            | string | 0.00% | 1       | game                                        |
-| releaseDate   | quantitative discrète (timestamp UNIX)      | int64  | 0.00% | 9 953   | 1044144000 (2003) ; 1588032000 (2020)       |
-| addedDate     | quantitative discrète (timestamp UNIX)      | int64  | 0.00% | 42 857  | 1464477672 (2016) ; 1718636541 (2024)       |
-| runCount      | quantitative discrète (compte)              | int64  | 0.00% | 1 522   | 47 395 ; 10                                 |
-| playerCount   | quantitative discrète (compte)              | int64  | 0.00% | 664     | 8 105 ; 4                                   |
-| rules         | qualitative nominale (texte libre)          | string | 0.00% | 18 651  | *(règles de soumission des runs)*           |
- 
+
+### Fichier principal : *games-data.csv*
+
+Fichier central du dataset. Chaque ligne correspond à un jeu unique référencé sur Speedrun.com.
+
+#### Dictionnaire de variables
+
+| Colonne       | Nature                                        | Type   | % NA   | Uniques | Exemples                             |
+|---------------|-----------------------------------------------|--------|--------|---------|--------------------------------------|
+| gameId        | qualitative nominale (identifiant unique)     | string | 0.00%  | 43 662  | j1n8nj91 ; m1zqmo76                  |
+| gameName      | qualitative nominale (texte)                  | string | 0.00%  | 43 639  | Super Mario 64 ; Celeste             |
+| releaseDate   | quantitative discrète (date)                  | string | 0.00%  | 9 958   | 01/11/1971 ; 01/01/2020              |
+| createdDate   | quantitative discrète (horodatage ISO 8601)   | string | 1.80%  | 42 865  | 2022-10-11T15:53:28Z                 |
+| platforms     | qualitative nominale (liste d'identifiants)   | string | 6.50%  | 4 874   | vm9vn63k ; o7e25xew,v06ddw64         |
+| genres        | qualitative nominale (liste d'identifiants)   | string | 66.60% | 4 878   | *(identifiants vers genres-data)*    |
+
+#### Remarques
+
+- **releaseDate** est stockée au format *JJ/MM/AAAA* et devra être convertie en véritable date lors du nettoyage ; **createdDate** est au format ISO 8601 (norme internationale de date et heure)
+- Les colonnes **platforms** et **genres** contiennent des **listes d'identifiants séparés par des virgules**, qui renvoient vers les fichiers *platforms-data.csv* et *genres-data.csv* ; il faudra séparer ces listes en plusieurs lignes (une ligne par plateforme ou par genre) avant de pouvoir faire les jointures, en utilisant la fonction **`separate_rows()`** du package **tidyr**
+- Le taux élevé de valeurs manquantes sur **genres** (67%) reflète le caractère optionnel de cette métadonnée sur Speedrun.com, et non une lacune du dataset
+- **gameName** servira de clé de jointure avec le dataset Video Game Sales, après un travail de normalisation des noms (différences de ponctuation, d'écriture, versions, etc.)
+
 ---
- 
-### Remarques
- 
-- Les dates (**releaseDate**, **addedDate**) sont stockées en **timestamps UNIX** (secondes depuis le 1er janvier 1970) et devront être converties en dates lisibles lors du nettoyage
-- La colonne **type** ne contient qu'une seule valeur (*game*), elle n'apportera donc pas d'information discriminante pour l'analyse
-- La colonne **rules** contient le texte brut des règles de speedrun ; elle n'apportera également pas d'information discriminante pour l'analyse
-- **1 006 jeux** n'ont aucune run soumise, et **1 005** n'ont aucun joueur associé, ce qui suggère des entrées inactives ou récemment ajoutées
-- La distribution des runs est **très asymétrique** : la médiane est de 10 runs par jeu, mais le maximum atteint 62 655 (Seterra), ce qui reflète une forte concentration de l'activité sur quelques jeux populaires
-- Les jeux les plus actifs incluent des titres emblématiques du speedrunning : **Super Mario 64**, **Celeste**, **Minecraft: Java Edition**, **Super Mario Odyssey**
- 
+
+### Fichier des runs classées : *leaderboards-data.csv*
+
+Contient toutes les runs **validées** et classées sur les leaderboards Speedrun.com. C'est le fichier de référence pour mesurer l'activité communautaire autour de chaque jeu.
+
+| Colonne | Nature                                                | Type   | % NA  | Uniques   | Exemples   |
+|---------|-------------------------------------------------------|--------|-------|-----------|------------|
+| runId   | qualitative nominale (identifiant unique)             | string | 0.00% | 2 232 884 | zpg4gdnz   |
+| gameId  | qualitative nominale (identifiant vers games-data)    | string | 0.00% | 42 278    | j1n8nj91   |
+| players | qualitative nominale (liste d'identifiants de joueurs)| string | 3.90% | 480 808   | 8d4kdg58   |
+
+#### Remarques
+
+- Les indicateurs d'activité utilisés dans l'analyse (**runCount** et **playerCount**) ne sont pas présents directement et devront être calculés en regroupant les runs par jeu :
+    - **runCount** : nombre total de runs par jeu
+    - **playerCount** : nombre de joueurs uniques par jeu
+- La colonne **players** peut contenir plusieurs identifiants séparés par des virgules dans le cas de runs réalisées en coopération
+- **3.9%** des runs n'ont pas d'information sur les joueurs (runs anonymes ou comptes utilisateurs supprimés)
+
 ---
- 
+
+### Table de référence : *platforms-data.csv*
+
+Liste des plateformes de jeu (consoles, ordinateurs, supports mobiles) référencées sur Speedrun.com.
+
+| Colonne       | Nature                                      | Type   | % NA  | Uniques | Exemples                         |
+|---------------|---------------------------------------------|--------|-------|---------|----------------------------------|
+| platformId    | qualitative nominale (identifiant unique)   | string | 0.00% | 213     | jm951reo                         |
+| name          | qualitative nominale (texte)                | string | 0.00% | 213     | 2DS ; Nintendo Switch ; PC       |
+| releaseYear   | quantitative discrète (année)               | int64  | 0.00% | 53      | 2013 ; 2017                      |
+
+---
+
+### Table de référence : *genres-data.csv*
+
+Liste des genres de jeu référencés sur Speedrun.com.
+
+| Colonne | Nature                                      | Type   | % NA  | Uniques | Exemples                          |
+|---------|---------------------------------------------|--------|-------|---------|-----------------------------------|
+| genreId | qualitative nominale (identifiant unique)   | string | 0.00% | 2 380   | l2kodwn1                          |
+| name    | qualitative nominale (texte)                | string | 0.00% | 2 380   | Platformer ; RPG ; .io Game       |
+
+---
+
+### Relations entre les fichiers
+
+
+Le dataset est organisé autour du fichier central *games-data.csv* :
+
+```
+leaderboards-data ── games-data ── platforms-data
+                         │
+                         └──────── genres-data
+```
+
+- Le fichier *leaderboards-data.csv* est relié à *games-data.csv* par la colonne **gameId** ; après agrégation, il fournit les indicateurs d'activité par jeu
+- Les fichiers *platforms-data.csv* et *genres-data.csv* sont des **tables de référence** : ils permettent de traduire les identifiants présents dans les colonnes **platforms** et **genres** de *games-data.csv* en noms lisibles (par exemple, transformer *vm9vn63k* en *Nintendo 64*)
+
+---
+
+### Remarques transversales
+
+- Tous les identifiants (gameId, runId, platformId, genreId) sont des **codes alphanumériques de 8 caractères** propres à Speedrun.com ; ils n'ont pas de signification en eux-mêmes mais servent uniquement à relier les fichiers entre eux
+- Le fichier *leaderboards-data.csv* représente l'essentiel du volume du dataset (environ 2.2 millions de lignes) et devra être **agrégé par jeu** dès la phase de préparation des données
+- La distribution de l'activité est très asymétrique : une minorité de jeux concentre la grande majorité des runs (*Super Mario 64*, *Celeste*, *Minecraft*, *Super Mario Odyssey*), tandis que de nombreux jeux ont très peu voire aucune run soumise
+
+---
+
 ### Unité d'observation et sous-groupes
- 
-L'unité d'observation est le **jeu** : chaque ligne correspond à un titre unique référencé sur Speedrun.com.
- 
+
+L'unité d'observation dépend du fichier : le **jeu** (*games-data.csv*) ou la **run** (*leaderboards-data.csv*). Après agrégation des runs par jeu, l'unité d'analyse principale devient le **jeu**.
+
 Les sous-groupes exploitables sont :
- 
+
 - **Période de sortie** (par décennie ou par année, via conversion de `releaseDate`)
-- **Ancienneté sur la plateforme** (via `addedDate`, pour analyser la dynamique d'adoption)
-- **Niveau d'activité** (en regroupant les jeux selon leur `runCount` soumises ou leur `playerCount`, par exemple : faible, moyen, élevé)
-
-
-
-
-### Croisement des datasets et normalisation des noms
-
-
-Pour exploiter pleinement la complémentarité de nos deux sources, il sera nécessaire de les croiser en faisant correspondre les jeux du dataset de ventes avec ceux du dataset Speedrun.com. Le point de jonction naturel entre les deux tables est le **nom du jeu**.
-
-
-Cependant, cette jointure ne sera pas immédiate : les noms de jeux peuvent varier d'un dataset à l'autre en raison de différences de formatage, d'abréviations, de suffixes de version ou encore de conventions d'écriture propres à chaque source. Par exemple, un jeu nommé *"Super Mario Bros."* dans le dataset de ventes pourrait apparaître comme *"Super Mario Bros"* (sans point) ou *"Super Mario Brothers"* sur Speedrun.com. Un travail de **normalisation des noms** sera donc indispensable avant toute analyse croisée, afin de maximiser le nombre de correspondances fiables entre les deux tables.
-
-Ce processus de nettoyage conditionnera directement la qualité et la fiabilité des analyses croisant performances commerciales et activité communautaire.
+- **Ancienneté sur la plateforme** (via `createdDate`, pour analyser la dynamique d'adoption)
+- **Niveau d'activité** (en regroupant les jeux selon leur nombre de runs ou de joueurs, par exemple : faible, moyen, élevé)
+- **Plateforme** (après séparation des listes dans `platforms` et jointure avec *platforms-data.csv*)
+- **Genre** (après séparation des listes dans `genres` et jointure avec *genres-data.csv*)
 
 # Plan d’analyse
 
