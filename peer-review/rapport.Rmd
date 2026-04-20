@@ -266,6 +266,63 @@ Ces genres dominent clairement les ventes globales, ce qui confirme qu’ils son
 ---
 - Quelle **région** contribue le plus aux ventes de jeux vidéo ?
 
+2. Quelles plateformes ont généré le plus de ventes à l’échelle mondiale ?
+
+Pour débuter notre exploration, nous cherchons à identifier quelles plateformes ont généré le plus de ventes de jeux à l’échelle mondiale. Avant de visualiser les données, nous pouvons supposer que le marché est historiquement écrasé par quelques consoles phares de constructeurs majeurs (comme Sony ou Nintendo), mais nous nous demandons si cette domination se concentre sur une ou deux machines, ou si la répartition est plus équilibrée entre les différentes générations de consoles.
+
+```{r, include=FALSE}
+library(readr)
+library(dplyr)
+library(ggplot2)
+data <- read_csv("../data/Video_Games_Sales_as_at_22_Dec_2016.csv")
+```
+
+```{r}
+library(dplyr)
+library(ggplot2)
+
+data_group <- data %>%
+  group_by(Platform)
+
+ventes_par_plateforme <- data_group %>%
+  summarise(total = sum(Global_Sales, na.rm = TRUE)) %>%
+  arrange(desc(total)) %>%
+  slice_head(n = 25)
+
+ventes_par_plateforme <- ventes_par_plateforme %>%
+  mutate(Constructeur = case_when(
+    Platform %in% c("PS2", "PS3", "PS", "PS4", "PSP", "PSV") ~ "Sony", # Ajout de la PSV
+    Platform %in% c("Wii", "DS", "GBA", "3DS", "GB", "NES", "N64", "SNES", "GC", "WiiU") ~ "Nintendo",
+    Platform %in% c("X360", "XB", "XOne") ~ "Microsoft",
+    Platform %in% c("SAT", "GEN", "DC", "SCD") ~ "Sega", # AJOUT DE SEGA
+    Platform == "PC" ~ "PC",
+    Platform == "2600" ~ "Atari",
+    TRUE ~ "Autre"
+  ))
+
+ggplot(ventes_par_plateforme, 
+       aes(x = reorder(Platform, -total), y = total, fill = Constructeur)) +
+  geom_col() +
+  scale_fill_manual(values = c("Sony" = "#003274",      
+                               "Nintendo" = "#E60012",  
+                               "Microsoft" = "#107C10", 
+                               "Sega" = "#0089CF",      # Bleu clair emblématique de Sega
+                               "PC" = "gray40",         
+                               "Atari" = "orange")) +   # Orange pour Atari
+  labs(x = "Plateforme",
+       y = "Ventes globales (millions)",
+       title = "Les 20 Plateformes qui vendent le plus de jeux",
+       fill = "Constructeur") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) # Incline le texte si besoin
+```
+
+
+Sur le graphique, on constate que le marché n'est pas équilibré, mais qu'il répond plutôt à une logique de paliers avec un leader incontesté. On observe en effet une domination écrasante de la PS2, qui cumule à elle seule plus de 1,2 milliard de jeux vendus à travers le monde. En dessous de ce record, un premier palier regroupe des consoles extrêmement populaires ayant généré entre 700 et 1000 millions de ventes (la Xbox 360, la PS3, la Wii, la DS et la PS1). Vient ensuite un second grand groupe concentré entre 200 et 350 millions de ventes.
+
+Ces résultats répondent clairement à notre question initiale : l'industrie est largement dominée par deux acteurs historiques. D'un côté, Sony fait figure de leader en volume grâce au succès titanesque de la PS2 et à la présence de toutes ses consoles de salon (PS1, PS3, PS4) dans le haut du classement. De l'autre, Nintendo se démarque par une occupation massive du marché : le constructeur place 10 consoles différentes dans ce top 25 (Wii, DS, GBA, etc.). La grande diversité des périodes de sortie des machines de Nintendo souligne l'incroyable longévité de la firme nipponeà l'inverse de Sega qui n'a pas su durer dans le temps.
+
+---
+3.  Quelle région (Amérique du Nord, Europe, Japon, autres régions) contribue le plus aux ventes de jeux vidéo ?
 Pour répondre à cette question, nous avons utilisé un diagramme en barres. Ce type de graphique est particulièrement adapté pour comparer des quantités entre plusieurs catégories distinctes, ici les différentes régions du monde : Amérique du Nord, Europe, Japon et autres régions.
 
 ```{r}
@@ -285,9 +342,6 @@ barplot(sales,
 ```
 
 L’**Amérique du Nord** domine largement les ventes de jeux vidéo, représentant la plus grande part du marché. Elle est suivie par l’**Europe**, tandis que le Japon et les autres régions contribuent beaucoup moins. Cela montre que l’industrie des jeux vidéos est principalement portée par les marchés occidentaux.
----
-
-<!-- Place pour les question 3 -->
 
 ---
 
