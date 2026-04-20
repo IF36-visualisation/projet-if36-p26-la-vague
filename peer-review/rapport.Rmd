@@ -291,10 +291,10 @@ ventes_par_plateforme <- data_group %>%
 
 ventes_par_plateforme <- ventes_par_plateforme %>%
   mutate(Constructeur = case_when(
-    Platform %in% c("PS2", "PS3", "PS", "PS4", "PSP", "PSV") ~ "Sony", # Ajout de la PSV
+    Platform %in% c("PS2", "PS3", "PS", "PS4", "PSP", "PSV") ~ "Sony",
     Platform %in% c("Wii", "DS", "GBA", "3DS", "GB", "NES", "N64", "SNES", "GC", "WiiU") ~ "Nintendo",
     Platform %in% c("X360", "XB", "XOne") ~ "Microsoft",
-    Platform %in% c("SAT", "GEN", "DC", "SCD") ~ "Sega", # AJOUT DE SEGA
+    Platform %in% c("SAT", "GEN", "DC", "SCD") ~ "Sega",
     Platform == "PC" ~ "PC",
     Platform == "2600" ~ "Atari",
     TRUE ~ "Autre"
@@ -306,14 +306,14 @@ ggplot(ventes_par_plateforme,
   scale_fill_manual(values = c("Sony" = "#003274",      
                                "Nintendo" = "#E60012",  
                                "Microsoft" = "#107C10", 
-                               "Sega" = "#0089CF",      # Bleu clair emblématique de Sega
+                               "Sega" = "#0089CF", 
                                "PC" = "gray40",         
-                               "Atari" = "orange")) +   # Orange pour Atari
+                               "Atari" = "orange")) +
   labs(x = "Plateforme",
        y = "Ventes globales (millions)",
        title = "Les 20 Plateformes qui vendent le plus de jeux",
        fill = "Constructeur") +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) # Incline le texte si besoin
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
 
