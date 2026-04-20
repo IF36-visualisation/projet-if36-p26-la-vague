@@ -221,8 +221,8 @@ knitr::opts_chunk$set(echo = FALSE)
 library(dplyr)
 library(ggplot2)
 library(readr)
-data <- read_csv("Video_Games_Sales_as_at_22_Dec_2016.csv")
-videoGameSales <- read_csv("Video_Games_Sales_as_at_22_Dec_2016.csv")
+data <- read_csv("../data/Video_Games_Sales_as_at_22_Dec_2016.csv")
+videoGameSales <- read_csv("../data/Video_Games_Sales_as_at_22_Dec_2016.csv")
 ```
 
 ## 1. Quelles plateformes ont généré le plus de ventes à l'échelle mondiale ? {#q1-plateformes}
