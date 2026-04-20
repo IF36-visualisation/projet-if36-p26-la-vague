@@ -1,0 +1,21 @@
+---
+title: "rapport"
+output: html_document
+---
+
+# Introduction
+
+Qui n’a jamais débattu avec ses amis pour savoir quel jeu vidéo est le meilleur de tous les temps ? Entre les fans de LOL *(quelle idée…)*, les nostalgiques de Mario et les adeptes de Minecraft, les opinions sont souvent… très tranchées.
+
+Mais le jeu vidéo ne se résume pas uniquement à ses ventes : derrière chaque succès commercial se cache aussi une communauté de joueurs, parfois très engagée. Certains terminent un jeu… d’autres cherchent à le finir le plus vite possible.
+
+Dans ce projet, nous avons choisi de croiser deux aspects complémentaires du jeu vidéo :
+
+-   les **performances commerciales** avec le dataset **Video Game Sales** ;
+-   l’**activité compétitive et communautaire** avec le dataset **Speedrun.com Data**, qui recense les records, les joueurs et les catégories de speedrun.
+
+L’objectif est de ne pas se limiter à une vision économique du jeu vidéo, mais d’explorer également l’engagement des joueurs. En combinant ces deux sources, nous cherchons à comprendre si les jeux les plus vendus sont aussi ceux qui génèrent le plus d’activité dans la communauté, ou si, au contraire, certains jeux deviennent cultes indépendamment de leur succès commercial.
+
+------------------------------------------------------------------------
+
+# Analyse
