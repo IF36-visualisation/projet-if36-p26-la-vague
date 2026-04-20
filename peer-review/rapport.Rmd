@@ -213,4 +213,52 @@ Les sous-groupes exploitables sont :
 -   **Plateforme** (après séparation des listes dans `platforms` et jointure avec *platforms-data.csv*)
 -   **Genre** (après séparation des listes dans `genres` et jointure avec *genres-data.csv*)
 
+# Analyse
 
+```{r}
+library(dplyr)
+library(ggplot2)
+library(readr)
+```
+
+-   Quels sont les **genres** de jeux vidéo qui génèrent le plus de ventes ?
+
+L’objectif ici est d’identifier les **genres** qui génèrent le plus de ventes à l’échelle mondiale. On peut s’attendre à ce que certains genres plus "populaires", comme les jeux d’action ou de sport, dominent le marché.
+
+NB : Lors de l’analyse exploratoire, un problème est apparu : deux lignes contenaient une valeur manquante (`NA`) pour la variable *Genre*, ce qui créait une catégorie artificielle représentant **2.42 millions de ventes globales**. Ces lignes ont été supprimées afin de ne pas fausser les résultats.
+
+```{r}
+
+videoGameSales <- read_csv("../data/Video_Games_Sales_as_at_22_Dec_2016.csv")
+
+
+# Variable contenant la somme des ventes globales des genres de jeux vidéos par ordre décroissant
+sales_by_genre <- videoGameSales %>%
+  filter(!is.na(Genre)) %>%
+  group_by(Genre) %>%
+  summarise(Total_Sales = sum(Global_Sales)) %>%
+  arrange(desc(Total_Sales))
+
+sales_by_genre
+
+# Création du BarChart
+ggplot(sales_by_genre, aes(x = reorder(Genre, Total_Sales), y = Total_Sales)) +
+  geom_col(fill = "steelblue") +
+  coord_flip() +
+  labs(
+    title = "Ventes globales par genre de jeu vidéo",
+    x = "Genre",
+    y = "Ventes globales (millions)"
+  ) +
+  theme_minimal()
+```
+
+Le graphique met en évidence le **top 3 des genres les plus vendeurs** :
+
+-   **Action**
+
+-   **Sports**
+
+-   **Shooter**
+
+Ces genres dominent clairement les ventes globales, ce qui confirme qu’ils sont les plus populaires auprès du grand public. À l’inverse, des genres comme **Strategy** ou **Puzzle** restent plus niche et génèrent moins de ventes.
