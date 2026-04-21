@@ -21,18 +21,18 @@ output:
 
 # Introduction {#introduction}
 
-Qui n’a jamais débattu avec ses amis pour savoir quel jeu vidéo est le meilleur de tous les temps ? Entre les fans de LOL *(quelle idée…)*, les nostalgiques de Mario et les adeptes de Minecraft, les opinions sont souvent… très tranchées.
+Qui n’a jamais débattu avec ses amis pour savoir quel jeu vidéo est le meilleur de tous les temps ? Entre les fans de LOL *(quelle idée…)*, les nostalgiques de Mario et les adeptes de Minecraft, les opinions sont souvent… très tranchées.  
 
 Mais le jeu vidéo ne se résume pas uniquement à ses ventes : derrière chaque succès commercial se cache aussi une communauté de joueurs, parfois très engagée. Certains terminent un jeu… d’autres cherchent à le finir le plus vite possible.
 
 Dans ce projet, nous avons choisi de croiser deux aspects complémentaires du jeu vidéo :
 
--   les **performances commerciales** avec le dataset **Video Game Sales** ;
--   l’**activité compétitive et communautaire** avec le dataset **Speedrun.com Data**, qui recense les records, les joueurs et les catégories de speedrun.
+- les **performances commerciales** avec le dataset **Video Game Sales** ;
+- l’**activité compétitive et communautaire** avec le dataset **Speedrun.com Data**, qui recense les records, les joueurs et les catégories de speedrun.
 
 L’objectif est de ne pas se limiter à une vision économique du jeu vidéo, mais d’explorer également l’engagement des joueurs. En combinant ces deux sources, nous cherchons à comprendre si les jeux les plus vendus sont aussi ceux qui génèrent le plus d’activité dans la communauté, ou si, au contraire, certains jeux deviennent cultes indépendamment de leur succès commercial.
 
-------------------------------------------------------------------------
+---
 
 # Données {#données}
 
@@ -40,11 +40,11 @@ Dans le cadre de ce projet, nous utilisons deux jeux de données complémentaire
 
 ## Dataset 1 : Video Game Sales (Rush Kirubi)
 
-Ce dataset combine des données de ventes issues de [**VGChartz**](https://www.vgchartz.com/) et des scores/avis issus de [**Metacritic**](https://www.metacritic.com/).
+Ce dataset combine des données de ventes issues de [**VGChartz**](https://www.vgchartz.com/) et des scores/avis issus de [**Metacritic**](https://www.metacritic.com/).  
 
 Il est important de noter que le fichier date du **22 décembre 2016**, et ne contient donc pas des données récentes.
 
-Le fichier principal est un **CSV** (*Video_Games_Sales_as_at_22_Dec_2016.csv*), de dimension **(16 719 × 16)**.
+Le fichier principal est un **CSV** (*Video_Games_Sales_as_at_22_Dec_2016.csv*), de dimension **(16 719 × 16)**.  
 
 Cependant, le jeu de données présente de nombreuses valeurs manquantes, notamment pour les variables liées aux scores utilisateurs. En effet, la plateforme Metacritic ne couvre pas toutes les plateformes présentes dans le dataset. Ainsi, environ **9 600 observations** disposent de données complètes.
 
@@ -52,34 +52,36 @@ Cependant, le jeu de données présente de nombreuses valeurs manquantes, notamm
 
 ### Dictionnaire de variables et qualité attendue
 
-| Colonne | Nature | Type | \% NA | Uniques | Exemples |
-|------------|------------|------------|------------|------------|------------|
-| Name | qualitative nominale (texte) | object | 0.02% | 11 563 | Wii Sports; Super Mario Bros. |
-| Platform | qualitative nominale (catégorie) | object | 0.00% | 31 | Wii; NES |
-| Year_of_Release | quantitative discrète (année) | float64 | 1.61% | — | 2006.0; 1985.0 |
-| Genre | qualitative nominale (catégorie) | object | 0.02% | 12 | Sports; Platform |
-| Publisher | qualitative nominale (catégorie) | object | 0.32% | 582 | Nintendo |
-| NA_Sales | quantitative continue (millions) | float64 | 0.00% | — | 41.36; 29.08 |
-| EU_Sales | quantitative continue (millions) | float64 | 0.00% | — | 28.96; 3.58 |
-| JP_Sales | quantitative continue (millions) | float64 | 0.00% | — | 3.77; 6.81 |
-| Other_Sales | quantitative continue (millions) | float64 | 0.00% | — | 8.45; 0.77 |
-| Global_Sales | quantitative continue (millions) | float64 | 0.00% | — | 82.53; 40.24 |
-| Critic_Score | quantitative discrète (0–100) | float64 | 51.33% | — | 76.0; 82.0 |
-| Critic_Count | quantitative discrète (compte) | float64 | 51.33% | — | 51.0; 73.0 |
-| User_Score | quantitative continue (0–10 + "tbd") | object | 40.10% | 96 | 8; 8.3; tbd |
-| User_Count | quantitative discrète (compte) | float64 | 54.60% | — | 322.0; 709.0 |
-| Developer | qualitative nominale (catégorie) | object | 39.61% | 1 696 | Nintendo |
-| Rating | qualitative (catégorie ESRB) | object | 40.49% | 8 | E |
+| Colonne           | Nature                                   | Type    | % NA   | Uniques | Exemples                          |
+|-------------------|------------------------------------------|---------|--------|---------|-----------------------------------|
+| Name              | qualitative nominale (texte)             | object  | 0.02%  | 11 563  | Wii Sports; Super Mario Bros.      |
+| Platform          | qualitative nominale (catégorie)         | object  | 0.00%  | 31      | Wii; NES                          |
+| Year_of_Release   | quantitative discrète (année)            | float64 | 1.61%  | —       | 2006.0; 1985.0                    |
+| Genre             | qualitative nominale (catégorie)         | object  | 0.02%  | 12      | Sports; Platform                  |
+| Publisher         | qualitative nominale (catégorie)         | object  | 0.32%  | 582     | Nintendo                          |
+| NA_Sales          | quantitative continue (millions)         | float64 | 0.00%  | —       | 41.36; 29.08                      |
+| EU_Sales          | quantitative continue (millions)         | float64 | 0.00%  | —       | 28.96; 3.58                       |
+| JP_Sales          | quantitative continue (millions)         | float64 | 0.00%  | —       | 3.77; 6.81                        |
+| Other_Sales       | quantitative continue (millions)         | float64 | 0.00%  | —       | 8.45; 0.77                        |
+| Global_Sales      | quantitative continue (millions)         | float64 | 0.00%  | —       | 82.53; 40.24                      |
+| Critic_Score      | quantitative discrète (0–100)            | float64 | 51.33% | —       | 76.0; 82.0                        |
+| Critic_Count      | quantitative discrète (compte)           | float64 | 51.33% | —       | 51.0; 73.0                        |
+| User_Score        | quantitative continue (0–10 + "tbd")     | object  | 40.10% | 96      | 8; 8.3; tbd                       |
+| User_Count        | quantitative discrète (compte)           | float64 | 54.60% | —       | 322.0; 709.0                      |
+| Developer         | qualitative nominale (catégorie)         | object  | 39.61% | 1 696   | Nintendo                          |
+| Rating            | qualitative (catégorie ESRB)             | object  | 40.49% | 8       | E                                 |
 
 ------------------------------------------------------------------------
 
 ### Remarques
 
--   Les scores critiques de Metacritic sont sur une échelle de 0 à 100\
--   De nombreuses données liées aux scores sont manquantes, mais le volume restant reste suffisant pour mener des analyses pertinentes
--   Les variables **User_Score** et **Year_of_Release** contiennent des valeurs non numériques (*tbd*, *N/A*), nécessitant un nettoyage préalable
--   Chaque ligne correspond à un **jeu sur une plateforme donnée**. Ainsi, un même jeu peut apparaître plusieurs fois, ce qui peut biaiser certaines analyses si l’on ne précise pas l’unité d’étude
--   Les noms de développeurs, éditeurs ou plateformes peuvent présenter des variations (abréviations, doublons), ce qui nécessite un travail de normalisation, notamment pour le croisement avec d’autres datasets
+- La variable `Platform` est codée sous forme d’abréviations (par exemple `PS4`, `GB`, `X360`).
+La correspondance complète est fournie en **Annexe A**.
+- Les scores critiques de Metacritic sont sur une échelle de 0 à 100  
+- De nombreuses données liées aux scores sont manquantes, mais le volume restant reste suffisant pour mener des analyses pertinentes
+- Les variables **User_Score** et **Year_of_Release** contiennent des valeurs non numériques (*tbd*, *N/A*), nécessitant un nettoyage préalable
+- Chaque ligne correspond à un **jeu sur une plateforme donnée**. Ainsi, un même jeu peut apparaître plusieurs fois, ce qui peut biaiser certaines analyses si l’on ne précise pas l’unité d’étude
+- Les noms de développeurs, éditeurs ou plateformes peuvent présenter des variations (abréviations, doublons), ce qui nécessite un travail de normalisation, notamment pour le croisement avec d’autres datasets
 
 ------------------------------------------------------------------------
 
@@ -89,10 +91,10 @@ L’unité d’observation est le couple **(jeu, plateforme)** : un même titre 
 
 Cela permet de définir plusieurs sous-groupes :
 
--   **Plateforme** (≈ 31 plateformes)\
--   **Genre** (≈ 12 catégories)\
--   **Région de vente** (NA, EU, JP, Other)\
--   **Rating ESRB** (classification par âge)
+- **Plateforme** (≈ 31 plateformes)  
+- **Genre** (≈ 12 catégories)  
+- **Région de vente** (NA, EU, JP, Other)  
+- **Rating ESRB** (classification par âge)  
 
 Ces dimensions structurent fortement les analyses possibles.
 
@@ -102,12 +104,12 @@ Ce dataset recense les jeux référencés sur [**Speedrun.com**](https://www.spe
 
 Le dataset est composé de **4 fichiers CSV** reliés entre eux par des identifiants communs :
 
-| Fichier | Dimensions | Unité d'observation | Description |
-|---------------|---------------|---------------|---------------------------|
-| *games-data.csv* | (43 663 × 6) | Jeu | Métadonnées de chaque jeu référencé sur Speedrun.com |
-| *leaderboards-data.csv* | (2 232 884 × 3) | Run classée | Runs validées et classées sur les leaderboards |
-| *platforms-data.csv* | (213 × 3) | Plateforme | Table de référence des plateformes (consoles, PC, supports mobiles) |
-| *genres-data.csv* | (2 380 × 2) | Genre | Table de référence des genres de jeu |
+| Fichier                 | Dimensions      | Unité d'observation | Description                                                          |
+|-------------------------|-----------------|---------------------|----------------------------------------------------------------------|
+| *games-data.csv*        | (43 663 × 6)    | Jeu                 | Métadonnées de chaque jeu référencé sur Speedrun.com                 |
+| *leaderboards-data.csv* | (2 232 884 × 3) | Run classée         | Runs validées et classées sur les leaderboards                       |
+| *platforms-data.csv*    | (213 × 3)       | Plateforme          | Table de référence des plateformes (consoles, PC, supports mobiles)  |
+| *genres-data.csv*       | (2 380 × 2)     | Genre               | Table de référence des genres de jeu                                 |
 
 Le dataset couvre des jeux dont les dates de sortie s'étendent de **1971 à 2026** (dates futures correspondant à des jeux annoncés), et dont l'ajout sur la plateforme Speedrun.com s'échelonne de **fin 2014 à début 2025**. Les runs enregistrées couvrent la période **2012-2025**.
 
@@ -119,21 +121,21 @@ Fichier central du dataset. Chaque ligne correspond à un jeu unique référenc�
 
 #### Dictionnaire de variables
 
-| Colonne | Nature | Type | \% NA | Uniques | Exemples |
-|------------|------------|------------|------------|------------|------------|
-| gameId | qualitative nominale (identifiant unique) | string | 0.00% | 43 662 | j1n8nj91 ; m1zqmo76 |
-| gameName | qualitative nominale (texte) | string | 0.00% | 43 639 | Super Mario 64 ; Celeste |
-| releaseDate | quantitative discrète (date) | string | 0.00% | 9 958 | 01/11/1971 ; 01/01/2020 |
-| createdDate | quantitative discrète (horodatage ISO 8601) | string | 1.80% | 42 865 | 2022-10-11T15:53:28Z |
-| platforms | qualitative nominale (liste d'identifiants) | string | 6.50% | 4 874 | vm9vn63k ; o7e25xew,v06ddw64 |
-| genres | qualitative nominale (liste d'identifiants) | string | 66.60% | 4 878 | *(identifiants vers genres-data)* |
+| Colonne       | Nature                                        | Type   | % NA   | Uniques | Exemples                             |
+|---------------|-----------------------------------------------|--------|--------|---------|--------------------------------------|
+| gameId        | qualitative nominale (identifiant unique)     | string | 0.00%  | 43 662  | j1n8nj91 ; m1zqmo76                  |
+| gameName      | qualitative nominale (texte)                  | string | 0.00%  | 43 639  | Super Mario 64 ; Celeste             |
+| releaseDate   | quantitative discrète (date)                  | string | 0.00%  | 9 958   | 01/11/1971 ; 01/01/2020              |
+| createdDate   | quantitative discrète (horodatage ISO 8601)   | string | 1.80%  | 42 865  | 2022-10-11T15:53:28Z                 |
+| platforms     | qualitative nominale (liste d'identifiants)   | string | 6.50%  | 4 874   | vm9vn63k ; o7e25xew,v06ddw64         |
+| genres        | qualitative nominale (liste d'identifiants)   | string | 66.60% | 4 878   | *(identifiants vers genres-data)*    |
 
 #### Remarques
 
--   **releaseDate** est stockée au format *JJ/MM/AAAA* et devra être convertie en véritable date lors du nettoyage ; **createdDate** est au format ISO 8601 (norme internationale de date et heure)
--   Les colonnes **platforms** et **genres** contiennent des **listes d'identifiants séparés par des virgules**, qui renvoient vers les fichiers *platforms-data.csv* et *genres-data.csv* ; il faudra séparer ces listes en plusieurs lignes (une ligne par plateforme ou par genre) avant de pouvoir faire les jointures, en utilisant la fonction **`separate_rows()`** du package **tidyr**
--   Le taux élevé de valeurs manquantes sur **genres** (67%) reflète le caractère optionnel de cette métadonnée sur Speedrun.com, et non une lacune du dataset
--   **gameName** servira de clé de jointure avec le dataset Video Game Sales, après un travail de normalisation des noms (différences de ponctuation, d'écriture, versions, etc.)
+- **releaseDate** est stockée au format *JJ/MM/AAAA* et devra être convertie en véritable date lors du nettoyage ; **createdDate** est au format ISO 8601 (norme internationale de date et heure)
+- Les colonnes **platforms** et **genres** contiennent des **listes d'identifiants séparés par des virgules**, qui renvoient vers les fichiers *platforms-data.csv* et *genres-data.csv* ; il faudra séparer ces listes en plusieurs lignes (une ligne par plateforme ou par genre) avant de pouvoir faire les jointures, en utilisant la fonction **`separate_rows()`** du package **tidyr**
+- Le taux élevé de valeurs manquantes sur **genres** (67%) reflète le caractère optionnel de cette métadonnée sur Speedrun.com, et non une lacune du dataset
+- **gameName** servira de clé de jointure avec le dataset Video Game Sales, après un travail de normalisation des noms (différences de ponctuation, d'écriture, versions, etc.)
 
 ------------------------------------------------------------------------
 
@@ -141,19 +143,19 @@ Fichier central du dataset. Chaque ligne correspond à un jeu unique référenc�
 
 Contient toutes les runs **validées** et classées sur les leaderboards Speedrun.com. C'est le fichier de référence pour mesurer l'activité communautaire autour de chaque jeu.
 
-| Colonne | Nature | Type | \% NA | Uniques | Exemples |
-|-----------|-------------------|-----------|-----------|-----------|-----------|
-| runId | qualitative nominale (identifiant unique) | string | 0.00% | 2 232 884 | zpg4gdnz |
-| gameId | qualitative nominale (identifiant vers games-data) | string | 0.00% | 42 278 | j1n8nj91 |
-| players | qualitative nominale (liste d'identifiants de joueurs) | string | 3.90% | 480 808 | 8d4kdg58 |
+| Colonne | Nature                                                | Type   | % NA  | Uniques   | Exemples   |
+|---------|-------------------------------------------------------|--------|-------|-----------|------------|
+| runId   | qualitative nominale (identifiant unique)             | string | 0.00% | 2 232 884 | zpg4gdnz   |
+| gameId  | qualitative nominale (identifiant vers games-data)    | string | 0.00% | 42 278    | j1n8nj91   |
+| players | qualitative nominale (liste d'identifiants de joueurs)| string | 3.90% | 480 808   | 8d4kdg58   |
 
 #### Remarques
 
--   Les indicateurs d'activité utilisés dans l'analyse (**runCount** et **playerCount**) ne sont pas présents directement et devront être calculés en regroupant les runs par jeu :
-    -   **runCount** : nombre total de runs par jeu
-    -   **playerCount** : nombre de joueurs uniques par jeu
--   La colonne **players** peut contenir plusieurs identifiants séparés par des virgules dans le cas de runs réalisées en coopération
--   **3.9%** des runs n'ont pas d'information sur les joueurs (runs anonymes ou comptes utilisateurs supprimés)
+- Les indicateurs d'activité utilisés dans l'analyse (**runCount** et **playerCount**) ne sont pas présents directement et devront être calculés en regroupant les runs par jeu :
+  - **runCount** : nombre total de runs par jeu
+  - **playerCount** : nombre de joueurs uniques par jeu
+- La colonne **players** peut contenir plusieurs identifiants séparés par des virgules dans le cas de runs réalisées en coopération
+- **3.9%** des runs n'ont pas d'information sur les joueurs (runs anonymes ou comptes utilisateurs supprimés)
 
 ------------------------------------------------------------------------
 
@@ -161,11 +163,11 @@ Contient toutes les runs **validées** et classées sur les leaderboards Speedru
 
 Liste des plateformes de jeu (consoles, ordinateurs, supports mobiles) référencées sur Speedrun.com.
 
-| Colonne | Nature | Type | \% NA | Uniques | Exemples |
-|------------|-------------|------------|------------|------------|------------|
-| platformId | qualitative nominale (identifiant unique) | string | 0.00% | 213 | jm951reo |
-| name | qualitative nominale (texte) | string | 0.00% | 213 | 2DS ; Nintendo Switch ; PC |
-| releaseYear | quantitative discrète (année) | int64 | 0.00% | 53 | 2013 ; 2017 |
+| Colonne       | Nature                                      | Type   | % NA  | Uniques | Exemples                         |
+|---------------|---------------------------------------------|--------|-------|---------|----------------------------------|
+| platformId    | qualitative nominale (identifiant unique)   | string | 0.00% | 213     | jm951reo                         |
+| name          | qualitative nominale (texte)                | string | 0.00% | 213     | 2DS ; Nintendo Switch ; PC       |
+| releaseYear   | quantitative discrète (année)               | int64  | 0.00% | 53      | 2013 ; 2017                      |
 
 ------------------------------------------------------------------------
 
@@ -173,10 +175,10 @@ Liste des plateformes de jeu (consoles, ordinateurs, supports mobiles) référen
 
 Liste des genres de jeu référencés sur Speedrun.com.
 
-| Colonne | Nature | Type | \% NA | Uniques | Exemples |
-|------------|-------------|------------|------------|------------|------------|
-| genreId | qualitative nominale (identifiant unique) | string | 0.00% | 2 380 | l2kodwn1 |
-| name | qualitative nominale (texte) | string | 0.00% | 2 380 | Platformer ; RPG ; .io Game |
+| Colonne | Nature                                      | Type   | % NA  | Uniques | Exemples                          |
+|---------|---------------------------------------------|--------|-------|---------|-----------------------------------|
+| genreId | qualitative nominale (identifiant unique)   | string | 0.00% | 2 380   | l2kodwn1                          |
+| name    | qualitative nominale (texte)                | string | 0.00% | 2 380   | Platformer ; RPG ; .io Game       |
 
 ------------------------------------------------------------------------
 
@@ -184,22 +186,22 @@ Liste des genres de jeu référencés sur Speedrun.com.
 
 Le dataset est organisé autour du fichier central *games-data.csv* :
 
-```         
+```
 leaderboards-data ── games-data ── platforms-data
                          │
                          └──────── genres-data
 ```
 
--   Le fichier *leaderboards-data.csv* est relié à *games-data.csv* par la colonne **gameId** ; après agrégation, il fournit les indicateurs d'activité par jeu
--   Les fichiers *platforms-data.csv* et *genres-data.csv* sont des **tables de référence** : ils permettent de traduire les identifiants présents dans les colonnes **platforms** et **genres** de *games-data.csv* en noms lisibles (par exemple, transformer *vm9vn63k* en *Nintendo 64*)
+- Le fichier *leaderboards-data.csv* est relié à *games-data.csv* par la colonne **gameId** ; après agrégation, il fournit les indicateurs d'activité par jeu
+- Les fichiers *platforms-data.csv* et *genres-data.csv* sont des **tables de référence** : ils permettent de traduire les identifiants présents dans les colonnes **platforms** et **genres** de *games-data.csv* en noms lisibles (par exemple, transformer *vm9vn63k* en *Nintendo 64*)
 
 ------------------------------------------------------------------------
 
 ### Remarques transversales
 
--   Tous les identifiants (gameId, runId, platformId, genreId) sont des **codes alphanumériques de 8 caractères** propres à Speedrun.com ; ils n'ont pas de signification en eux-mêmes mais servent uniquement à relier les fichiers entre eux
--   Le fichier *leaderboards-data.csv* représente l'essentiel du volume du dataset (environ 2.2 millions de lignes) et devra être **agrégé par jeu** dès la phase de préparation des données
--   La distribution de l'activité est très asymétrique : une minorité de jeux concentre la grande majorité des runs (*Super Mario 64*, *Celeste*, *Minecraft*, *Super Mario Odyssey*), tandis que de nombreux jeux ont très peu voire aucune run soumise
+- Tous les identifiants (gameId, runId, platformId, genreId) sont des **codes alphanumériques de 8 caractères** propres à Speedrun.com ; ils n'ont pas de signification en eux-mêmes mais servent uniquement à relier les fichiers entre eux
+- Le fichier *leaderboards-data.csv* représente l'essentiel du volume du dataset (environ 2.2 millions de lignes) et devra être **agrégé par jeu** dès la phase de préparation des données
+- La distribution de l'activité est très asymétrique : une minorité de jeux concentre la grande majorité des runs (*Super Mario 64*, *Celeste*, *Minecraft*, *Super Mario Odyssey*), tandis que de nombreux jeux ont très peu voire aucune run soumise
 
 ------------------------------------------------------------------------
 
@@ -209,11 +211,52 @@ L'unité d'observation dépend du fichier : le **jeu** (*games-data.csv*) ou la 
 
 Les sous-groupes exploitables sont :
 
--   **Période de sortie** (par décennie ou par année, via conversion de `releaseDate`)
--   **Ancienneté sur la plateforme** (via `createdDate`, pour analyser la dynamique d'adoption)
--   **Niveau d'activité** (en regroupant les jeux selon leur nombre de runs ou de joueurs, par exemple : faible, moyen, élevé)
--   **Plateforme** (après séparation des listes dans `platforms` et jointure avec *platforms-data.csv*)
--   **Genre** (après séparation des listes dans `genres` et jointure avec *genres-data.csv*)
+- **Période de sortie** (par décennie ou par année, via conversion de `releaseDate`)
+- **Ancienneté sur la plateforme** (via `createdDate`, pour analyser la dynamique d'adoption)
+- **Niveau d'activité** (en regroupant les jeux selon leur nombre de runs ou de joueurs, par exemple : faible, moyen, élevé)
+- **Plateforme** (après séparation des listes dans `platforms` et jointure avec *platforms-data.csv*)
+- **Genre** (après séparation des listes dans `genres` et jointure avec *genres-data.csv*)
+
+
+# Annexes
+
+## Annexe A — Correspondance des codes de plateformes
+
+Dans le dataset *Video Game Sales*, la variable `Platform` est codée sous forme d’abréviations. Afin de faciliter la lecture du rapport, le tableau ci-dessous présente la correspondance entre les codes utilisés et le nom complet des plateformes.
+
+| Code | Plateforme |
+|------|------------|
+| 2600 | Atari 2600 |
+| 3DO | 3DO Interactive Multiplayer |
+| 3DS | Nintendo 3DS |
+| DC | Dreamcast |
+| DS | Nintendo DS |
+| GB | Game Boy |
+| GBA | Game Boy Advance |
+| GC | Nintendo GameCube |
+| GEN | Sega Genesis / Mega Drive |
+| GG | Game Gear |
+| N64 | Nintendo 64 |
+| NES | Nintendo Entertainment System |
+| NG | Neo Geo |
+| PC | PC |
+| PCFX | PC-FX |
+| PS | PlayStation |
+| PS2 | PlayStation 2 |
+| PS3 | PlayStation 3 |
+| PS4 | PlayStation 4 |
+| PSP | PlayStation Portable |
+| PSV | PlayStation Vita |
+| SAT | Sega Saturn |
+| SCD | Sega CD |
+| SNES | Super Nintendo Entertainment System |
+| TG16 | TurboGrafx-16 |
+| WS | WonderSwan |
+| Wii | Nintendo Wii |
+| WiiU | Nintendo Wii U |
+| X360 | Xbox 360 |
+| XB | Xbox |
+| XOne | Xbox One |
 
 \newpage
 
@@ -278,7 +321,6 @@ Ces résultats répondent clairement à notre question initiale : l'industrie es
 ## 2. Quelles sont les plateformes qui ont générées le plus de ventes par région ? {#q2-plateformes-region}
 
 Dans la continuité de l’analyse précédente, nous cherchons ici à comprendre si les plateformes les plus performantes à l’échelle mondiale le sont également au niveau régional. On peut supposer que les préférences des joueurs varient selon les régions, notamment en fonction des habitudes culturelles et de la présence historique des constructeurs. L’objectif est donc d’identifier les plateformes dominantes en Amérique du Nord, en Europe, au Japon et dans les autres régions.
-
 
 ```{r}
 # Région Amérique du Nord
@@ -426,6 +468,8 @@ Les graphiques mettent en évidence des différences régionales marquées. En A
 Le Japon présente un contraste très fort : les consoles Nintendo, en particulier la Nintendo DS, dominent largement, accompagnées d’autres plateformes comme la Nintendo 3DS ou la Super Nintendo Entertainment System. Cette domination souligne une préférence pour les consoles portables et les acteurs locaux, tandis que le PC et Microsoft y sont très peu présents.
 
 Enfin, les autres régions suivent une tendance proche de l’Europe, avec une domination des consoles Sony, notamment la PS2 et la PS3, et une présence plus secondaire de Microsoft et du PC.
+
+\newpage
 
 ## 3. Quels sont les genres de jeux vidéo qui génèrent le plus de ventes au niveau mondiale ? {#q3-genres}
 
