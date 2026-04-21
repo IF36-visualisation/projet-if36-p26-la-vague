@@ -12,6 +12,9 @@ output:
     toc: true
     toc_depth: 3
     number_sections: false
+  word_document:
+    toc: true
+    toc_depth: '3'
 ---
 
 \newpage
@@ -273,7 +276,7 @@ Ces résultats répondent clairement à notre question initiale : l'industrie es
 
 \newpage
 
-## 2. Quels sont les genres de jeux vidéo qui génèrent le plus de ventes ? {#q2-genres}
+## 2. Quels sont les genres de jeux vidéo qui génèrent le plus de ventes au niveau mondiale ? {#q2-genres}
 
 L’objectif ici est d’identifier les **genres** qui génèrent le plus de ventes à l’échelle mondiale. On peut s’attendre à ce que certains genres plus "populaires", comme les jeux d’action ou de sport, dominent le marché.
 
@@ -333,7 +336,40 @@ L’**Amérique du Nord** domine largement les ventes de jeux vidéo, représent
 
 \newpage
 
-## 4. Observe-t-on des différences régionales dans les préférences de plateformes ou de genres ? {#q4-differences}
+## 4. Quels sont les jeux les plus vendus globalement ? {q4-galmes}
+Après avoir étudié la structure globale du marché du jeu vidéo — en identifiant les régions dominantes, les genres les plus populaires et les plateformes les plus performantes — il est pertinent de s’intéresser aux **jeux eux-mêmes**.
+
+En effet, ces analyses nous ont permis de comprendre *où* et *comment* se réalisent les ventes. Nous cherchons désormais à identifier **quels jeux concentrent réellement ce succès** à l’échelle mondiale.
+
+Pour cela, nous avons agrégé les ventes par **nom de jeu**, afin d’éviter les doublons liés aux différentes plateformes, puis extrait le **top 10 des jeux les plus vendus dans le monde**.
+
+```{r}
+top10_global <- videoGameSales %>%
+  group_by(Name) %>%
+  summarise(Total_Global_Sales = sum(Global_Sales, na.rm = TRUE)) %>%
+  arrange(desc(Total_Global_Sales)) %>%
+  slice_head(n = 10)
+
+ggplot(top10_global, aes(x = reorder(Name, Total_Global_Sales), y = Total_Global_Sales)) +
+  geom_col(fill = "steelblue") +
+  coord_flip() +
+  labs(
+    title = "Top 10 des jeux les plus vendus dans le monde",
+    x = "Jeu",
+    y = "Ventes mondiales (en millions)"
+  ) +
+  theme_minimal()
+```
+
+L’analyse du classement mondial met en évidence la domination de quelques titres emblématiques, souvent issus de **franchises majeures** (comme *Mario* ou *Grand Theft Auto*). Ces jeux bénéficient d’une forte reconnaissance internationale, d’un marketing important et d’une présence sur des consoles très populaires.
+
+On observe également que plusieurs de ces jeux sont associés à des **consoles à très fort succès**, notamment celles de Nintendo (comme la Wii), ce qui confirme les résultats obtenus précédemment sur la domination de certaines plateformes.
+
+Ainsi, le succès global d’un jeu apparaît comme le résultat d’une combinaison de facteurs : popularité du genre, diffusion de la plateforme et portée internationale de la licence.
+
+\newpage
+
+## 5. Observe-t-on des différences régionales dans les préférences de plateformes ou de genres ? {#q5-differences}
 
 L’objectif ici est d’examiner si les **préférences des joueurs varient
 selon les régions du monde** (Amérique du Nord, Europe, Japon, autres
@@ -417,3 +453,77 @@ pour les expériences narratives et immersives comme les RPG.
 
 Le graphique met en évidence des **différences régionales marquées dans
 les préférences de genres**.
+
+\newpage
+
+## 6. Quelles sont les préférences régionales en termes de jeux ? {#q6-jeux-region}
+
+Après avoir identifié les jeux les plus vendus à l’échelle mondiale, puis analysé les différences régionales en matière de **genres** et de **plateformes**, nous cherchons ici à approfondir l’analyse en nous intéressant directement aux **jeux eux-mêmes**.
+
+L’objectif est de déterminer si les jeux les plus populaires au niveau mondial dominent également dans toutes les régions, ou si des **préférences locales spécifiques** émergent lorsque l’on observe les classements région par région.
+
+Pour cela, nous avons agrégé les ventes par jeu pour chaque région (Amérique du Nord, Europe, Japon et autres régions), puis extrait le **top 10 des jeux les plus vendus** dans chacune d’entre elles. Les résultats sont présentés sous forme de graphique en facettes, permettant de comparer facilement les classements.
+
+D’un point de vue méthodologique, un identifiant unique combinant le nom du jeu et la région a été utilisé afin de garantir un tri correct dans chaque facette, assurant ainsi une lecture claire des résultats.
+
+```{r}
+# Agréger les ventes par jeu
+sales_by_game <- videoGameSales %>%
+  group_by(Name) %>%
+  summarise(
+    `Amérique du Nord` = sum(NA_Sales, na.rm = TRUE),
+    Europe = sum(EU_Sales, na.rm = TRUE),
+    Japon = sum(JP_Sales, na.rm = TRUE), 
+    `Autres régions` = sum(Other_Sales, na.rm = TRUE),
+  )
+
+# Passer en format long
+sales_long <- sales_by_game %>%
+  pivot_longer(
+    cols = -Name,
+    names_to = "Region",
+    values_to = "Sales"
+  )
+
+# Garder le top 10 de chaque région
+top10_by_region <- sales_long %>%
+  group_by(Region) %>%
+  arrange(desc(Sales), .by_group = TRUE) %>%
+  slice_head(n = 10) %>%
+  ungroup()
+
+# Créer un identifiant unique pour bien ordonner dans chaque facette : Wii Sports devient Wii Sports___Europe 
+# Changement d'ordre d'afficheage des régions 
+top10_by_region <- top10_by_region %>%
+  mutate(
+    Name_region = paste(Name, Region, sep = "____"),
+    Region = factor(
+      Region,
+      levels = c("Amérique du Nord", "Europe", "Japon", "Autres régions")
+    )
+  )
+
+# Graphique
+ggplot(top10_by_region, aes(x = reorder(Name_region, Sales), y = Sales)) +
+  geom_col(fill = "steelblue") +
+  coord_flip() +
+  facet_wrap(~ Region, scales = "free_y") +
+  scale_x_discrete(labels = function(x) sub("____.*", "", x)) +    #nettoyage des facettes
+  labs(
+    title = "Top 10 des jeux les plus vendus selon les régions",
+    x = "Jeu",
+    y = "Ventes (en millions)"
+  ) +
+  theme_minimal()
+
+```
+
+L’analyse met en évidence des **similitudes importantes entre l’Amérique du Nord et l’Europe**, où l’on retrouve une grande partie des mêmes jeux en tête des ventes. Cela confirme les observations précédentes : ces deux régions partagent des préférences proches, notamment pour des jeux grand public issus de grandes franchises internationales.
+
+En revanche, **le Japon se distingue nettement**. Son classement est largement dominé par des licences locales, notamment issues de Nintendo, telles que *Pokémon* ou *Super Mario*. Ce résultat est cohérent avec l’analyse des genres, qui montrait une forte préférence pour les jeux de type **RPG** dans cette région.
+
+Les **autres régions** présentent un profil intermédiaire, proche de celui des marchés occidentaux, bien que les volumes de ventes soient globalement plus faibles.
+
+Ainsi, cette analyse confirme que le succès d’un jeu ne dépend pas uniquement de sa performance globale. Il est fortement influencé par des **facteurs culturels et régionaux**, qui façonnent les préférences des joueurs et expliquent les écarts observés entre les différentes zones géographiques.
+
+\newpage
