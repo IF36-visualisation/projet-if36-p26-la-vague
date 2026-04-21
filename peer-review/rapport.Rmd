@@ -3,15 +3,15 @@ title: "Rapport"
 author: "La Vague"
 date: "2026-04-19"
 output:
-  html_document:
-    toc: true
-    toc_depth: 3
-    toc_float: true
   pdf_document:
     latex_engine: xelatex
     toc: true
     toc_depth: 3
     number_sections: false
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float: true
   word_document:
     toc: true
     toc_depth: '3'
@@ -325,7 +325,7 @@ Dans la continuité de l’analyse précédente, nous cherchons ici à comprendr
 ```{r}
 # Région Amérique du Nord
 
-na_platform_sales <- data %>%
+na_platform_sales <- videoGameSales %>%
   group_by(Platform) %>%
   summarise(NA_Sales = sum(NA_Sales, na.rm = TRUE)) %>%
   arrange(desc(NA_Sales)) %>%
@@ -360,7 +360,7 @@ na_platform_sales
 
 # Région Europe
 
-eu_region_platform_sales <- data %>%
+eu_region_platform_sales <- videoGameSales %>%
   group_by(Platform) %>%
   summarise(EU_Sales = sum(EU_Sales, na.rm = TRUE)) %>%
   arrange(desc(EU_Sales)) %>%
@@ -395,7 +395,7 @@ eu_region_platform_sales
 
 # Région Japon
 
-jp_region_platform_sales <- data %>%
+jp_region_platform_sales <- videoGameSales %>%
   group_by(Platform) %>%
   summarise(JP_Sales = sum(JP_Sales, na.rm = TRUE)) %>%
   arrange(desc(JP_Sales)) %>%
@@ -430,7 +430,7 @@ jp_region_platform_sales
 
 # Autres régions
 
-others_region_platform_sales <- data %>%
+others_region_platform_sales <- videoGameSales %>%
   group_by(Platform) %>%
   summarise(Other_Sales = sum(Other_Sales, na.rm = TRUE)) %>%
   arrange(desc(Other_Sales)) %>%
