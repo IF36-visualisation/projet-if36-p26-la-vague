@@ -38,7 +38,7 @@ L’objectif est de ne pas se limiter à une vision économique du jeu vidéo, m
 
 Dans le cadre de ce projet, nous utilisons deux jeux de données complémentaires afin d’analyser à la fois le **succès commercial** des jeux vidéo et leur **engagement au sein de la communauté**.
 
-## Dataset 1 : Video Game Sales (Rush Kirubi) 
+## Dataset 1 : Video Game Sales (Rush Kirubi)
 
 Ce dataset combine des données de ventes issues de [**VGChartz**](https://www.vgchartz.com/) et des scores/avis issus de [**Metacritic**](https://www.metacritic.com/).
 
@@ -53,7 +53,7 @@ Cependant, le jeu de données présente de nombreuses valeurs manquantes, notamm
 ### Dictionnaire de variables et qualité attendue
 
 | Colonne | Nature | Type | \% NA | Uniques | Exemples |
-|-----------|-----------------|-----------|-----------|-----------|-------------|
+|------------|------------|------------|------------|------------|------------|
 | Name | qualitative nominale (texte) | object | 0.02% | 11 563 | Wii Sports; Super Mario Bros. |
 | Platform | qualitative nominale (catégorie) | object | 0.00% | 31 | Wii; NES |
 | Year_of_Release | quantitative discrète (année) | float64 | 1.61% | — | 2006.0; 1985.0 |
@@ -103,7 +103,7 @@ Ce dataset recense les jeux référencés sur [**Speedrun.com**](https://www.spe
 Le dataset est composé de **4 fichiers CSV** reliés entre eux par des identifiants communs :
 
 | Fichier | Dimensions | Unité d'observation | Description |
-|--------------|--------------|--------------|--------------------------------|
+|---------------|---------------|---------------|---------------------------|
 | *games-data.csv* | (43 663 × 6) | Jeu | Métadonnées de chaque jeu référencé sur Speedrun.com |
 | *leaderboards-data.csv* | (2 232 884 × 3) | Run classée | Runs validées et classées sur les leaderboards |
 | *platforms-data.csv* | (213 × 3) | Plateforme | Table de référence des plateformes (consoles, PC, supports mobiles) |
@@ -120,7 +120,7 @@ Fichier central du dataset. Chaque ligne correspond à un jeu unique référenc�
 #### Dictionnaire de variables
 
 | Colonne | Nature | Type | \% NA | Uniques | Exemples |
-|----------|------------------|----------|----------|----------|--------------|
+|------------|------------|------------|------------|------------|------------|
 | gameId | qualitative nominale (identifiant unique) | string | 0.00% | 43 662 | j1n8nj91 ; m1zqmo76 |
 | gameName | qualitative nominale (texte) | string | 0.00% | 43 639 | Super Mario 64 ; Celeste |
 | releaseDate | quantitative discrète (date) | string | 0.00% | 9 958 | 01/11/1971 ; 01/01/2020 |
@@ -142,7 +142,7 @@ Fichier central du dataset. Chaque ligne correspond à un jeu unique référenc�
 Contient toutes les runs **validées** et classées sur les leaderboards Speedrun.com. C'est le fichier de référence pour mesurer l'activité communautaire autour de chaque jeu.
 
 | Colonne | Nature | Type | \% NA | Uniques | Exemples |
-|---------|----------------------------|---------|---------|---------|---------|
+|-----------|-------------------|-----------|-----------|-----------|-----------|
 | runId | qualitative nominale (identifiant unique) | string | 0.00% | 2 232 884 | zpg4gdnz |
 | gameId | qualitative nominale (identifiant vers games-data) | string | 0.00% | 42 278 | j1n8nj91 |
 | players | qualitative nominale (liste d'identifiants de joueurs) | string | 3.90% | 480 808 | 8d4kdg58 |
@@ -162,7 +162,7 @@ Contient toutes les runs **validées** et classées sur les leaderboards Speedru
 Liste des plateformes de jeu (consoles, ordinateurs, supports mobiles) référencées sur Speedrun.com.
 
 | Colonne | Nature | Type | \% NA | Uniques | Exemples |
-|----------|-------------------|----------|----------|----------|-------------|
+|------------|-------------|------------|------------|------------|------------|
 | platformId | qualitative nominale (identifiant unique) | string | 0.00% | 213 | jm951reo |
 | name | qualitative nominale (texte) | string | 0.00% | 213 | 2DS ; Nintendo Switch ; PC |
 | releaseYear | quantitative discrète (année) | int64 | 0.00% | 53 | 2013 ; 2017 |
@@ -174,7 +174,7 @@ Liste des plateformes de jeu (consoles, ordinateurs, supports mobiles) référen
 Liste des genres de jeu référencés sur Speedrun.com.
 
 | Colonne | Nature | Type | \% NA | Uniques | Exemples |
-|----------|--------------------|----------|----------|----------|--------------|
+|------------|-------------|------------|------------|------------|------------|
 | genreId | qualitative nominale (identifiant unique) | string | 0.00% | 2 380 | l2kodwn1 |
 | name | qualitative nominale (texte) | string | 0.00% | 2 380 | Platformer ; RPG ; .io Game |
 
@@ -269,14 +269,165 @@ ggplot(ventes_par_plateforme,
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
-
 Sur le graphique, on constate que le marché n'est pas équilibré, mais qu'il répond plutôt à une logique de paliers avec un leader incontesté. On observe en effet une domination écrasante de la PS2, qui cumule à elle seule plus de 1,2 milliard de jeux vendus à travers le monde. En dessous de ce record, un premier palier regroupe des consoles extrêmement populaires ayant généré entre 700 et 1000 millions de ventes (la Xbox 360, la PS3, la Wii, la DS et la PS1). Vient ensuite un second grand groupe concentré entre 200 et 350 millions de ventes.
 
 Ces résultats répondent clairement à notre question initiale : l'industrie est largement dominée par deux acteurs historiques. D'un côté, Sony fait figure de leader en volume grâce au succès titanesque de la PS2 et à la présence de toutes ses consoles de salon (PS1, PS3, PS4) dans le haut du classement. De l'autre, Nintendo se démarque par une occupation massive du marché : le constructeur place 10 consoles différentes dans ce top 25 (Wii, DS, GBA, etc.). La grande diversité des périodes de sortie des machines de Nintendo souligne l'incroyable longévité de la firme nipponeà l'inverse de Sega qui n'a pas su durer dans le temps.
 
 \newpage
 
-## 2. Quels sont les genres de jeux vidéo qui génèrent le plus de ventes au niveau mondiale ? {#q2-genres}
+## 2. Quelles sont les plateformes qui ont générées le plus de ventes par région ? {#q2-plateformes-region}
+
+Dans la continuité de l’analyse précédente, nous cherchons ici à comprendre si les plateformes les plus performantes à l’échelle mondiale le sont également au niveau régional. On peut supposer que les préférences des joueurs varient selon les régions, notamment en fonction des habitudes culturelles et de la présence historique des constructeurs. L’objectif est donc d’identifier les plateformes dominantes en Amérique du Nord, en Europe, au Japon et dans les autres régions.
+
+
+```{r}
+# Région Amérique du Nord
+
+na_platform_sales <- data %>%
+  group_by(Platform) %>%
+  summarise(NA_Sales = sum(NA_Sales, na.rm = TRUE)) %>%
+  arrange(desc(NA_Sales)) %>%
+  mutate(Constructeur = case_when(
+    Platform %in% c("PS2", "PS3", "PS", "PS4", "PSP", "PSV") ~ "Sony",
+    Platform %in% c("Wii", "DS", "GBA", "3DS", "GB", "NES", "N64", "SNES", "GC", "WiiU") ~ "Nintendo",
+    Platform %in% c("X360", "XB", "XOne") ~ "Microsoft",
+    Platform %in% c("SAT", "GEN", "DC", "SCD") ~ "Sega",
+    Platform == "PC" ~ "PC",
+    Platform == "2600" ~ "Atari",
+    TRUE ~ "Autre"
+  )) %>%
+  ggplot(aes(x = reorder(Platform, -NA_Sales), y = NA_Sales, fill = Constructeur)) +
+  geom_col() +
+  scale_fill_manual(values = c("Sony" = "#003274",
+                               "Nintendo" = "#E60012",
+                               "Microsoft" = "#107C10",
+                               "Sega" = "#0089CF",
+                               "PC" = "gray40",
+                               "Atari" = "orange",
+                               "Autre" = "gray70")) +
+  labs(
+    x = "Plateforme",
+    y = "Ventes (millions)",
+    title = "Ventes de jeux vidéo par plateforme en Amérique du Nord",
+    fill = "Constructeur"
+  ) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+na_platform_sales
+
+
+# Région Europe
+
+eu_region_platform_sales <- data %>%
+  group_by(Platform) %>%
+  summarise(EU_Sales = sum(EU_Sales, na.rm = TRUE)) %>%
+  arrange(desc(EU_Sales)) %>%
+  mutate(Constructeur = case_when(
+    Platform %in% c("PS2", "PS3", "PS", "PS4", "PSP", "PSV") ~ "Sony",
+    Platform %in% c("Wii", "DS", "GBA", "3DS", "GB", "NES", "N64", "SNES", "GC", "WiiU") ~ "Nintendo",
+    Platform %in% c("X360", "XB", "XOne") ~ "Microsoft",
+    Platform %in% c("SAT", "GEN", "DC", "SCD") ~ "Sega",
+    Platform == "PC" ~ "PC",
+    Platform == "2600" ~ "Atari",
+    TRUE ~ "Autre"
+  )) %>%
+  ggplot(aes(x = reorder(Platform, -EU_Sales), y = EU_Sales, fill = Constructeur)) +
+  geom_col() +
+  scale_fill_manual(values = c("Sony" = "#003274",
+                               "Nintendo" = "#E60012",
+                               "Microsoft" = "#107C10",
+                               "Sega" = "#0089CF",
+                               "PC" = "gray40",
+                               "Atari" = "orange",
+                               "Autre" = "gray70")) +
+  labs(
+    x = "Plateforme",
+    y = "Ventes (millions)",
+    title = "Ventes de jeux vidéo par plateforme en Europe",
+    fill = "Constructeur"
+  ) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+eu_region_platform_sales
+
+
+# Région Japon
+
+jp_region_platform_sales <- data %>%
+  group_by(Platform) %>%
+  summarise(JP_Sales = sum(JP_Sales, na.rm = TRUE)) %>%
+  arrange(desc(JP_Sales)) %>%
+  mutate(Constructeur = case_when(
+    Platform %in% c("PS2", "PS3", "PS", "PS4", "PSP", "PSV") ~ "Sony",
+    Platform %in% c("Wii", "DS", "GBA", "3DS", "GB", "NES", "N64", "SNES", "GC", "WiiU") ~ "Nintendo",
+    Platform %in% c("X360", "XB", "XOne") ~ "Microsoft",
+    Platform %in% c("SAT", "GEN", "DC", "SCD") ~ "Sega",
+    Platform == "PC" ~ "PC",
+    Platform == "2600" ~ "Atari",
+    TRUE ~ "Autre"
+  )) %>%
+  ggplot(aes(x = reorder(Platform, -JP_Sales), y = JP_Sales, fill = Constructeur)) +
+  geom_col() +
+  scale_fill_manual(values = c("Sony" = "#003274",
+                               "Nintendo" = "#E60012",
+                               "Microsoft" = "#107C10",
+                               "Sega" = "#0089CF",
+                               "PC" = "gray40",
+                               "Atari" = "orange",
+                               "Autre" = "gray70")) +
+  labs(
+    x = "Plateforme",
+    y = "Ventes (millions)",
+    title = "Ventes de jeux vidéo par plateforme au Japon",
+    fill = "Constructeur"
+  ) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+jp_region_platform_sales
+
+
+# Autres régions
+
+others_region_platform_sales <- data %>%
+  group_by(Platform) %>%
+  summarise(Other_Sales = sum(Other_Sales, na.rm = TRUE)) %>%
+  arrange(desc(Other_Sales)) %>%
+  mutate(Constructeur = case_when(
+    Platform %in% c("PS2", "PS3", "PS", "PS4", "PSP", "PSV") ~ "Sony",
+    Platform %in% c("Wii", "DS", "GBA", "3DS", "GB", "NES", "N64", "SNES", "GC", "WiiU") ~ "Nintendo",
+    Platform %in% c("X360", "XB", "XOne") ~ "Microsoft",
+    Platform %in% c("SAT", "GEN", "DC", "SCD") ~ "Sega",
+    Platform == "PC" ~ "PC",
+    Platform == "2600" ~ "Atari",
+    TRUE ~ "Autre"
+  )) %>%
+  ggplot(aes(x = reorder(Platform, -Other_Sales), y = Other_Sales, fill = Constructeur)) +
+  geom_col() +
+  scale_fill_manual(values = c("Sony" = "#003274",
+                               "Nintendo" = "#E60012",
+                               "Microsoft" = "#107C10",
+                               "Sega" = "#0089CF",
+                               "PC" = "gray40",
+                               "Atari" = "orange",
+                               "Autre" = "gray70")) +
+  labs(
+    x = "Plateforme",
+    y = "Ventes (millions)",
+    title = "Ventes de jeux vidéo par plateforme dans les autres régions",
+    fill = "Constructeur"
+  ) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+others_region_platform_sales
+```
+
+Les graphiques mettent en évidence des différences régionales marquées. En Amérique du Nord, la Xbox 360 domine nettement, même si les consoles Sony comme la PlayStation 2 et la PlayStation 3 restent très présentes. En Europe, la domination de Sony est plus claire, avec la PS2 et la PS3 en tête, suivies par la Xbox 360. On note également une présence plus marquée du PC, qui atteint des niveaux de ventes élevés comparés aux autres régions.
+
+Le Japon présente un contraste très fort : les consoles Nintendo, en particulier la Nintendo DS, dominent largement, accompagnées d’autres plateformes comme la Nintendo 3DS ou la Super Nintendo Entertainment System. Cette domination souligne une préférence pour les consoles portables et les acteurs locaux, tandis que le PC et Microsoft y sont très peu présents.
+
+Enfin, les autres régions suivent une tendance proche de l’Europe, avec une domination des consoles Sony, notamment la PS2 et la PS3, et une présence plus secondaire de Microsoft et du PC.
+
+## 3. Quels sont les genres de jeux vidéo qui génèrent le plus de ventes au niveau mondiale ? {#q3-genres}
 
 L’objectif ici est d’identifier les **genres** qui génèrent le plus de ventes à l’échelle mondiale. On peut s’attendre à ce que certains genres plus "populaires", comme les jeux d’action ou de sport, dominent le marché.
 
@@ -312,7 +463,7 @@ Ces genres dominent clairement les ventes globales, ce qui confirme qu’ils son
 
 \newpage
 
-## 3. Quelle région (Amérique du Nord, Europe, Japon, autres régions) contribue le plus aux ventes de jeux vidéo ? {#q3-regions}
+## 4. Quelle région (Amérique du Nord, Europe, Japon, autres régions) contribue le plus aux ventes de jeux vidéo ? {#q4-regions}
 
 Pour répondre à cette question, nous avons utilisé un diagramme en barres. Ce type de graphique est particulièrement adapté pour comparer des quantités entre plusieurs catégories distinctes, ici les différentes régions du monde : Amérique du Nord, Europe, Japon et autres régions.
 
@@ -336,7 +487,8 @@ L’**Amérique du Nord** domine largement les ventes de jeux vidéo, représent
 
 \newpage
 
-## 4. Quels sont les jeux les plus vendus globalement ? {q4-galmes}
+## 5. Quels sont les jeux les plus vendus globalement ? {q5-galmes}
+
 Après avoir étudié la structure globale du marché du jeu vidéo — en identifiant les régions dominantes, les genres les plus populaires et les plateformes les plus performantes — il est pertinent de s’intéresser aux **jeux eux-mêmes**.
 
 En effet, ces analyses nous ont permis de comprendre *où* et *comment* se réalisent les ventes. Nous cherchons désormais à identifier **quels jeux concentrent réellement ce succès** à l’échelle mondiale.
@@ -369,22 +521,13 @@ Ainsi, le succès global d’un jeu apparaît comme le résultat d’une combina
 
 \newpage
 
-## 5. Observe-t-on des différences régionales dans les préférences de plateformes ou de genres ? {#q5-differences}
+## 6. Observe-t-on des différences régionales dans les préférences de plateformes ou de genres ? {#q6-differences}
 
-L’objectif ici est d’examiner si les **préférences des joueurs varient
-selon les régions du monde** (Amérique du Nord, Europe, Japon, autres
-régions), que ce soit en termes de **genres de jeux** ou de
-**plateformes**.
+L’objectif ici est d’examiner si les **préférences des joueurs varient selon les régions du monde** (Amérique du Nord, Europe, Japon, autres régions), que ce soit en termes de **genres de jeux** ou de **plateformes**.
 
-On peut formuler l’hypothèse suivante : certaines régions présentent des
-préférences marquées. Par exemple, le **Japon** pourrait davantage
-privilégier les jeux de rôle (*RPG*) ou les consoles locales, tandis que
-l’**Amérique du Nord** et l’**Europe** pourraient être plus orientées
-vers les jeux d’action ou de sport.
+On peut formuler l’hypothèse suivante : certaines régions présentent des préférences marquées. Par exemple, le **Japon** pourrait davantage privilégier les jeux de rôle (*RPG*) ou les consoles locales, tandis que l’**Amérique du Nord** et l’**Europe** pourraient être plus orientées vers les jeux d’action ou de sport.
 
-Afin de tester cette hypothèse, nous allons comparer les **ventes par
-genre selon les régions**. Cela permettra d’identifier les genres
-dominants dans chaque zone géographique.
+Afin de tester cette hypothèse, nous allons comparer les **ventes par genre selon les régions**. Cela permettra d’identifier les genres dominants dans chaque zone géographique.
 
 ```{r}
 sales_by_genre_region <- videoGameSales %>%
@@ -424,39 +567,19 @@ ggplot(sales_long, aes(x = Sales, y = reorder(Genre, Sales), fill = Region)) +
   )
 ```
 
-On observe tout d’abord que l’**Amérique du Nord** domine largement les
-ventes pour la plupart des genres, notamment **Action**, **Sports** et
-**Shooter**, qui apparaissent comme les catégories les plus populaires.
-L’**Europe** présente un profil assez similaire, bien que les volumes de
-ventes soient légèrement inférieurs, ce qui suggère des préférences
-proches entre ces deux régions occidentales.
+On observe tout d’abord que l’**Amérique du Nord** domine largement les ventes pour la plupart des genres, notamment **Action**, **Sports** et **Shooter**, qui apparaissent comme les catégories les plus populaires. L’**Europe** présente un profil assez similaire, bien que les volumes de ventes soient légèrement inférieurs, ce qui suggère des préférences proches entre ces deux régions occidentales.
 
-En revanche, le **Japon** se distingue nettement par une préférence
-beaucoup plus marquée pour les **Role-Playing Games (RPG)**, où les
-ventes sont particulièrement élevées comparées aux autres régions. À
-l’inverse, les genres comme **Shooter** ou **Sports**, très populaires
-en Amérique du Nord et en Europe, y restent beaucoup moins dominants.
-Cela reflète des différences culturelles importantes dans les types de
-jeux appréciés.
+En revanche, le **Japon** se distingue nettement par une préférence beaucoup plus marquée pour les **Role-Playing Games (RPG)**, où les ventes sont particulièrement élevées comparées aux autres régions. À l’inverse, les genres comme **Shooter** ou **Sports**, très populaires en Amérique du Nord et en Europe, y restent beaucoup moins dominants. Cela reflète des différences culturelles importantes dans les types de jeux appréciés.
 
-Les **autres régions** affichent globalement des niveaux de ventes plus
-faibles, mais suivent une tendance relativement proche de celle de
-l’Europe, avec une popularité notable des genres **Action** et
-**Sports**.
+Les **autres régions** affichent globalement des niveaux de ventes plus faibles, mais suivent une tendance relativement proche de celle de l’Europe, avec une popularité notable des genres **Action** et **Sports**.
 
-Ainsi, le graphique confirme clairement notre hypothèse : les
-préférences en matière de jeux vidéo varient selon les régions du monde.
-Tandis que les marchés occidentaux sont dominés par des genres orientés
-action et compétition, le Japon se démarque par un attrait plus fort
-pour les expériences narratives et immersives comme les RPG.
+Ainsi, le graphique confirme clairement notre hypothèse : les préférences en matière de jeux vidéo varient selon les régions du monde. Tandis que les marchés occidentaux sont dominés par des genres orientés action et compétition, le Japon se démarque par un attrait plus fort pour les expériences narratives et immersives comme les RPG.
 
-
-Le graphique met en évidence des **différences régionales marquées dans
-les préférences de genres**.
+Le graphique met en évidence des **différences régionales marquées dans les préférences de genres**.
 
 \newpage
 
-## 6. Quelles sont les préférences régionales en termes de jeux ? {#q6-jeux-region}
+## 7. Quelles sont les préférences régionales en termes de jeux ? {#q7-jeux-region}
 
 Après avoir identifié les jeux les plus vendus à l’échelle mondiale, puis analysé les différences régionales en matière de **genres** et de **plateformes**, nous cherchons ici à approfondir l’analyse en nous intéressant directement aux **jeux eux-mêmes**.
 
