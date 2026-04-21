@@ -11,7 +11,10 @@
   - [4. Analyse par sous-groupes](#4-analyse-par-sous-groupes--genres-et-plateformes)
   - [5. Ce que nous espérons montrer](#5-ce-que-nous-espérons-montrer)
   - [6. Difficultés et limites attendues](#6-difficultés-et-limites-attendues)
-  
+
+- [Annexes](#annexes)
+  - [Annexe A — Correspondance des codes de plateformes](#annexe-a--correspondance-des-codes-de-plateformes)
+
 # Introduction
 
 Qui n’a jamais débattu avec ses amis pour savoir quel jeu vidéo est le meilleur de tous les temps ? Entre les fans de LOL *(quelle idée…)*, les nostalgiques de Mario et les adeptes de Minecraft, les opinions sont souvent… très tranchées.  
@@ -68,6 +71,8 @@ Cependant, le jeu de données présente de nombreuses valeurs manquantes, notamm
 
 ### Remarques
 
+- La variable `Platform` est codée sous forme d’abréviations (par exemple `PS4`, `GB`, `X360`).
+La correspondance complète est fournie en **Annexe A**.
 - Les scores critiques de Metacritic sont sur une échelle de 0 à 100  
 - De nombreuses données liées aux scores sont manquantes, mais le volume restant reste suffisant pour mener des analyses pertinentes
 - Les variables **User_Score** et **Year_of_Release** contiennent des valeurs non numériques (*tbd*, *N/A*), nécessitant un nettoyage préalable
@@ -88,7 +93,6 @@ Cela permet de définir plusieurs sous-groupes :
 - **Rating ESRB** (classification par âge)  
 
 Ces dimensions structurent fortement les analyses possibles.
-
 
 ## Dataset 2 : Speedrun.com Dataset
 
@@ -144,8 +148,8 @@ Contient toutes les runs **validées** et classées sur les leaderboards Speedru
 #### Remarques
 
 - Les indicateurs d'activité utilisés dans l'analyse (**runCount** et **playerCount**) ne sont pas présents directement et devront être calculés en regroupant les runs par jeu :
-    - **runCount** : nombre total de runs par jeu
-    - **playerCount** : nombre de joueurs uniques par jeu
+  - **runCount** : nombre total de runs par jeu
+  - **playerCount** : nombre de joueurs uniques par jeu
 - La colonne **players** peut contenir plusieurs identifiants séparés par des virgules dans le cas de runs réalisées en coopération
 - **3.9%** des runs n'ont pas d'information sur les joueurs (runs anonymes ou comptes utilisateurs supprimés)
 
@@ -175,7 +179,6 @@ Liste des genres de jeu référencés sur Speedrun.com.
 ---
 
 ### Relations entre les fichiers
-
 
 Le dataset est organisé autour du fichier central *games-data.csv* :
 
@@ -349,3 +352,45 @@ Cela peut rendre certaines analyses globales moins représentatives et nécessit
 Certaines variables du dataset de ventes contiennent de nombreuses valeurs manquantes, notamment pour les scores critiques et utilisateurs. Cela pourra limiter certaines analyses complémentaires.
 
 ---
+
+\newpage
+
+# Annexes
+
+## Annexe A — Correspondance des codes de plateformes
+
+Dans le dataset *Video Game Sales*, la variable `Platform` est codée sous forme d’abréviations. Afin de faciliter la lecture du rapport, le tableau ci-dessous présente la correspondance entre les codes utilisés et le nom complet des plateformes.
+
+| Code | Plateforme |
+|------|------------|
+| 2600 | Atari 2600 |
+| 3DO | 3DO Interactive Multiplayer |
+| 3DS | Nintendo 3DS |
+| DC | Dreamcast |
+| DS | Nintendo DS |
+| GB | Game Boy |
+| GBA | Game Boy Advance |
+| GC | Nintendo GameCube |
+| GEN | Sega Genesis / Mega Drive |
+| GG | Game Gear |
+| N64 | Nintendo 64 |
+| NES | Nintendo Entertainment System |
+| NG | Neo Geo |
+| PC | PC |
+| PCFX | PC-FX |
+| PS | PlayStation |
+| PS2 | PlayStation 2 |
+| PS3 | PlayStation 3 |
+| PS4 | PlayStation 4 |
+| PSP | PlayStation Portable |
+| PSV | PlayStation Vita |
+| SAT | Sega Saturn |
+| SCD | Sega CD |
+| SNES | Super Nintendo Entertainment System |
+| TG16 | TurboGrafx-16 |
+| WS | WonderSwan |
+| Wii | Nintendo Wii |
+| WiiU | Nintendo Wii U |
+| X360 | Xbox 360 |
+| XB | Xbox |
+| XOne | Xbox One |
