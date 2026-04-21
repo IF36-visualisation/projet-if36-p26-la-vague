@@ -3,15 +3,15 @@ title: "Rapport"
 author: "La Vague"
 date: "2026-04-19"
 output:
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float: true
   pdf_document:
     latex_engine: xelatex
     toc: true
     toc_depth: 3
     number_sections: false
-  html_document:
-    toc: true
-    toc_depth: 3
-    toc_float: true
 ---
 
 \newpage
@@ -221,7 +221,7 @@ knitr::opts_chunk$set(echo = FALSE)
 library(dplyr)
 library(ggplot2)
 library(readr)
-data <- read_csv("../data/Video_Games_Sales_as_at_22_Dec_2016.csv")
+library(tidyr)
 videoGameSales <- read_csv("../data/Video_Games_Sales_as_at_22_Dec_2016.csv")
 ```
 
@@ -231,7 +231,7 @@ Pour débuter notre exploration, nous cherchons à identifier quelles plateforme
 
 ```{r}
 
-data_group <- data %>%
+data_group <- videoGameSales %>%
   group_by(Platform)
 
 ventes_par_plateforme <- data_group %>%
