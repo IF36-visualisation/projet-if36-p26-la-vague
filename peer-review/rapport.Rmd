@@ -931,7 +931,7 @@ merged_games <- sales_games %>%
 ```
 
 
-## 1. Existe-t-il un lien entre succès commercial en Europe et activité speedrun ? {#q1-couplage}
+## 12. Existe-t-il un lien entre succès commercial en Europe et activité speedrun ?
 
 Après avoir étudié les grandes tendances du marché du jeu vidéo (plateformes dominantes, genres populaires et différences régionales), une question essentielle se pose désormais pour notre studio *La Vague* :
 
@@ -1077,7 +1077,7 @@ Deux profils atypiques apparaissent particulièrement :
 
 \newpage
 
-## 2. Quels genres de jeux attirent le plus la communauté speedrun ? {#q2-couplage}
+## 13. Quels genres de jeux attirent le plus la communauté speedrun ?
 
 Après avoir observé que le succès commercial n’explique pas entièrement l’activité speedrun d’un jeu, nous cherchons maintenant à identifier si certains genres semblent naturellement plus adaptés au speedrun que d’autres.
 
@@ -1154,7 +1154,8 @@ Cette analyse nous donne plusieurs pistes importantes pour concevoir un jeu capa
 
 
 \newpage
-## 3. Les jeux les mieux notés attirent-ils davantage les speedrunners ? {#q3-couplage}
+
+## 14. Les jeux les mieux notés attirent-ils davantage les speedrunners ?
 
 Après avoir identifié les genres les plus populaires auprès de la communauté speedrun, nous cherchons maintenant à comprendre si la qualité perçue d’un jeu influence également son activité speedrun.
 
@@ -1295,7 +1296,7 @@ Ces résultats suggèrent donc que la qualité globale d’un jeu joue probablem
 
 ---
 
-## 4. Quels constructeurs possèdent les communautés speedrun les plus actives ? {#q4-couplage}
+## 15. Quels constructeurs possèdent les communautés speedrun les plus actives ?
 @to-do: blabla
 
 ```{r, fig.width=10, fig.height=6, warning=FALSE, message=FALSE}
