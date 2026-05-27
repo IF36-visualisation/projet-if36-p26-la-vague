@@ -667,6 +667,7 @@ Pour cela, nous avons agrégé les ventes par jeu pour chaque région (Amérique
 
 D’un point de vue méthodologique, un identifiant unique combinant le nom du jeu et la région a été utilisé afin de garantir un tri correct dans chaque facette, assurant ainsi une lecture claire des résultats.
 
+
 ```{r}
 # Agréger les ventes par jeu
 sales_by_game <- videoGameSales %>%
@@ -758,6 +759,7 @@ ggplot(top_jeux, aes(x = nb_runs, y = reorder(gameName, nb_runs))) +
     y = NULL
   )
 ```
+
 À la lecture du graphique, nous nous rendons compte que la popularité du jeu ne suffit pas pour en faire un jeu très speedrunné, car beaucoup de jeux qu'on ne considère pas comme des « classiques » du jeu vidéo sont présents dans ce classement, notamment Diddy Kong Racing (un clone de Mario Kart) ou encore PAYDAY 2 (un FPS coopératif).
 Un jeu peu connu peut être speedrunné s'il a les bons atouts, notamment un format adapté (durée d'une run, accessibilité, mécaniques répétables) comme les jeux de course ou de plateforme.
 Cependant, au vu de la grande quantité de jeux connus dans le classement, nous aurions plus de chances de produire un jeu speedrunné s'il est très populaire.Notre objectif est donc de concevoir un jeu populaire avec de bonnes mécaniques de speedrun.
@@ -791,6 +793,7 @@ ggplot(top_genres, aes(x = nb_runs, y = reorder(genreName, nb_runs))) +
     y = NULL
   )
 ```
+
 À la lecture de ce graphique, le platformer semble être le genre de jeu le plus relancé par les joueurs, loin devant les jeux de course et les FPS.
 En effet, les jeux de plateforme se prêtent bien, comme nous l'avons vu précédemment, aux mécaniques de rejouabilité.
 Si on veut que notre jeu se classe parmi les plus speedrunnés, il peut être intéressant qu'il mélange les styles. Nous pouvons imaginer un platformer sous forme de course.
@@ -833,7 +836,7 @@ Notre jeu devra donc s'inscrire dans un univers récent et être facilement part
 La question est cruciale : il nous faut choisir la bonne plateforme pour sortir notre jeu, car un jeu lancé sur une plateforme peu active aura du mal à fédérer une communauté de speedrun.
 Nous imaginons que la plateforme la plus speedrunnée sera le PC, son caractère universel le rendant accessible au plus grand nombre.
 
-```{r echo=FALSE}
+```{r echo=FALSE, fig.height=6, fig.width=10, message=FALSE, warning=FALSE}
 # 1. Compter les runs par plateforme (en retirant les NA)
 runs_par_plateforme <- speedrun %>%
   filter(!is.na(platformName)) %>%
