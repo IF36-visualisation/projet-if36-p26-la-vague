@@ -412,7 +412,9 @@ ggplot(ventes_par_plateforme,
        y = "Ventes globales (millions)",
        title = "Les 20 Plateformes qui vendent le plus de jeux",
        fill = "Constructeur") +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
+  
+  theme_minimal() 
 ```
 
 Sur le graphique, on constate que le marché n'est pas équilibré, mais qu'il répond plutôt à une logique de paliers avec un leader incontesté. On observe en effet une domination écrasante de la PS2, qui cumule à elle seule plus de 1,2 milliard de jeux vendus à travers le monde. En dessous de ce record, un premier palier regroupe des consoles extrêmement populaires ayant généré entre 700 et 1000 millions de ventes (la Xbox 360, la PS3, la Wii, la DS et la PS1). Vient ensuite un second grand groupe concentré entre 200 et 350 millions de ventes.
@@ -518,7 +520,9 @@ ggplot(sales_by_genre, aes(x = reorder(Genre, Total_Sales), y = Total_Sales)) +
     title = "Ventes globales par genre de jeu vidéo",
     x = "Genre",
     y = "Ventes globales (millions)"
-  )
+  ) + 
+  
+  theme_minimal() 
 ```
 
 Le graphique met en évidence le **top 3 des genres les plus vendeurs** :
@@ -557,7 +561,9 @@ ggplot(sales_df, aes(x = reorder(region, -ventes), y = ventes, fill = region)) +
     title = "Contribution des régions aux ventes de jeux vidéo",
     x = NULL,
     y = "Ventes (millions)"
-  )
+  ) + 
+  
+  theme_minimal() 
 ```
 
 L’**Amérique du Nord** domine largement les ventes de jeux vidéo, représentant la plus grande part du marché. Elle est suivie par l’**Europe**, tandis que le Japon et les autres régions contribuent beaucoup moins. Cela montre que l’industrie des jeux vidéos est principalement portée par les marchés occidentaux.
@@ -756,7 +762,9 @@ ggplot(top_jeux, aes(x = nb_runs, y = reorder(gameName, nb_runs))) +
     title = "Top 15 des jeux par nombre de runs",
     x = "Nombre de runs",
     y = NULL
-  )
+  ) + 
+  
+  theme_minimal() 
 ```
 À la lecture du graphique, nous nous rendons compte que la popularité du jeu ne suffit pas pour en faire un jeu très speedrunné, car beaucoup de jeux qu'on ne considère pas comme des « classiques » du jeu vidéo sont présents dans ce classement, notamment Diddy Kong Racing (un clone de Mario Kart) ou encore PAYDAY 2 (un FPS coopératif).
 Un jeu peu connu peut être speedrunné s'il a les bons atouts, notamment un format adapté (durée d'une run, accessibilité, mécaniques répétables) comme les jeux de course ou de plateforme.
@@ -789,7 +797,9 @@ ggplot(top_genres, aes(x = nb_runs, y = reorder(genreName, nb_runs))) +
     title = "Top 15 des genres par nombre de runs",
     x = "Nombre de runs",
     y = NULL
-  )
+  ) + 
+  
+  theme_minimal() 
 ```
 À la lecture de ce graphique, le platformer semble être le genre de jeu le plus relancé par les joueurs, loin devant les jeux de course et les FPS.
 En effet, les jeux de plateforme se prêtent bien, comme nous l'avons vu précédemment, aux mécaniques de rejouabilité.
@@ -819,9 +829,10 @@ ggplot(jeux_resume, aes(x = anneeJeu, weight = nb_runs)) +
     title = "Distribution des runs selon l'année de sortie du jeu",
     x = "Année de sortie du jeu",
     y = "Nombre total de runs"
-  )
+  ) + 
+  
+  theme_minimal() 
 ```
-
 Étonnamment, nous remarquons un pic du nombre de runs pour les jeux sortis autour de 2014. Cela pourrait s'expliquer par l'essor du streaming sur Twitch durant cette période, qui a donné au speedrun une visibilité nouvelle et incité les joueurs à revenir sur leurs jeux pour battre des records. 
 À cela s'ajoute une évolution dans la conception des jeux eux-mêmes, de plus en plus pensés pour la rejouabilité et le speedrun, avec des mécaniques comme les chronomètres intégrés, les classements en ligne ou les niveaux découpés en segments courts.
 
@@ -850,7 +861,9 @@ ggplot(top_plateformes, aes(x = nb_runs, y = reorder(platformName, nb_runs))) +
     title = "Top 15 des plateformes les plus populaires chez les speedrunners",
     x = "Nombre de runs",
     y = NULL
-  )
+  )  + 
+  
+  theme_minimal() 
 ```
 Comme attendu, le PC domine largement devant toutes les autres plateformes. C'est en effet une plateforme qui permet facilement d'enregistrer et de soumettre des runs sur speedrun.com (ce qui peut d'ailleurs constituer un biais en faveur des jeux PC dans notre dataset).
 Quoi qu'il en soit, notre jeu devra être disponible sur PC pour maximiser ses chances d'être speedrunné.
@@ -1044,7 +1057,6 @@ ggplot(merged_games_log,
   
   labs(
     title = "Lien entre ventes européennes et activité speedrun",
-    subtitle = "Identification des jeux atypiques par rapport à la tendance générale",
     x = "Ventes européennes (millions, échelle logarithmique)",
     y = "Nombre de runs speedrun (échelle logarithmique)"
   ) +
@@ -1052,12 +1064,7 @@ ggplot(merged_games_log,
   theme_minimal() +
   
   theme(
-    plot.title = element_text(face = "bold", size = 20),
-    plot.subtitle = element_text(size = 12),
-    axis.title = element_text(size = 14),
-    axis.text = element_text(size = 11),
     legend.position = "bottom",
-    legend.text = element_text(size = 11)
   )
 ```
 Le graphique met en évidence **une corrélation positive globale** entre les ventes européennes et l’activité speedrun : les jeux les plus populaires commercialement tendent effectivement à générer davantage de runs speedrun. Notre hypothèse est donc partiellement validée.
@@ -1108,13 +1115,7 @@ ggplot(speedrun_by_genre,
     y = "Nombre total de runs speedrun"
   ) +
   
-  theme_minimal() +
-  
-  theme(
-    plot.title = element_text(face = "bold", size = 18),
-    axis.title = element_text(size = 14),
-    axis.text = element_text(size = 11)
-  )
+  theme_minimal()
 
 ```
 
@@ -1259,7 +1260,6 @@ ggplot(merged_scores_filtered,
 
   labs(
     title = "Lien entre score critique et activité speedrun",
-    subtitle = "Identification des jeux atypiques par rapport à la tendance générale",
     x = "Score critique Metacritic",
     y = "Nombre de runs speedrun"
   ) +
@@ -1267,12 +1267,7 @@ ggplot(merged_scores_filtered,
   theme_minimal() +
 
   theme(
-    plot.title = element_text(face = "bold", size = 20),
-    plot.subtitle = element_text(size = 12),
-    axis.title = element_text(size = 14),
-    axis.text = element_text(size = 11),
     legend.position = "bottom",
-    legend.text = element_text(size = 11)
   )
 ```
 
@@ -1330,7 +1325,6 @@ ggplot(speedrun_by_constructeur,
   scale_fill_manual(values = palette_plateformes) +
   labs(
     title = "Activité speedrun par constructeur",
-    subtitle = "Nombre total de runs speedrun selon le constructeur associé au jeu",
     x = "Constructeur",
     y = "Nombre total de runs speedrun",
     fill = "Constructeur"
