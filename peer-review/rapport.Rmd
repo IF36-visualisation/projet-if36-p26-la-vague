@@ -673,6 +673,7 @@ Pour cela, nous avons agrégé les ventes par jeu pour chaque région (Amérique
 
 D’un point de vue méthodologique, un identifiant unique combinant le nom du jeu et la région a été utilisé afin de garantir un tri correct dans chaque facette, assurant ainsi une lecture claire des résultats.
 
+
 ```{r}
 # Agréger les ventes par jeu
 sales_by_game <- videoGameSales %>%
@@ -766,6 +767,7 @@ ggplot(top_jeux, aes(x = nb_runs, y = reorder(gameName, nb_runs))) +
   
   theme_minimal() 
 ```
+
 À la lecture du graphique, nous nous rendons compte que la popularité du jeu ne suffit pas pour en faire un jeu très speedrunné, car beaucoup de jeux qu'on ne considère pas comme des « classiques » du jeu vidéo sont présents dans ce classement, notamment Diddy Kong Racing (un clone de Mario Kart) ou encore PAYDAY 2 (un FPS coopératif).
 Un jeu peu connu peut être speedrunné s'il a les bons atouts, notamment un format adapté (durée d'une run, accessibilité, mécaniques répétables) comme les jeux de course ou de plateforme.
 Cependant, au vu de la grande quantité de jeux connus dans le classement, nous aurions plus de chances de produire un jeu speedrunné s'il est très populaire.Notre objectif est donc de concevoir un jeu populaire avec de bonnes mécaniques de speedrun.
@@ -801,6 +803,7 @@ ggplot(top_genres, aes(x = nb_runs, y = reorder(genreName, nb_runs))) +
   
   theme_minimal() 
 ```
+
 À la lecture de ce graphique, le platformer semble être le genre de jeu le plus relancé par les joueurs, loin devant les jeux de course et les FPS.
 En effet, les jeux de plateforme se prêtent bien, comme nous l'avons vu précédemment, aux mécaniques de rejouabilité.
 Si on veut que notre jeu se classe parmi les plus speedrunnés, il peut être intéressant qu'il mélange les styles. Nous pouvons imaginer un platformer sous forme de course.
@@ -844,7 +847,7 @@ Notre jeu devra donc s'inscrire dans un univers récent et être facilement part
 La question est cruciale : il nous faut choisir la bonne plateforme pour sortir notre jeu, car un jeu lancé sur une plateforme peu active aura du mal à fédérer une communauté de speedrun.
 Nous imaginons que la plateforme la plus speedrunnée sera le PC, son caractère universel le rendant accessible au plus grand nombre.
 
-```{r echo=FALSE}
+```{r echo=FALSE, fig.height=6, fig.width=10, message=FALSE, warning=FALSE}
 # 1. Compter les runs par plateforme (en retirant les NA)
 runs_par_plateforme <- speedrun %>%
   filter(!is.na(platformName)) %>%
@@ -941,7 +944,7 @@ merged_games <- sales_games %>%
 ```
 
 
-## 1. Existe-t-il un lien entre succès commercial en Europe et activité speedrun ? {#q1-couplage}
+## 12. Existe-t-il un lien entre succès commercial en Europe et activité speedrun ?
 
 Après avoir étudié les grandes tendances du marché du jeu vidéo (plateformes dominantes, genres populaires et différences régionales), une question essentielle se pose désormais pour notre studio *La Vague* :
 
@@ -1081,78 +1084,10 @@ Deux profils atypiques apparaissent particulièrement :
 
 \newpage
 
-## 2. Quels genres de jeux attirent le plus la communauté speedrun ? {#q2-couplage}
-
-Après avoir observé que le succès commercial n’explique pas entièrement l’activité speedrun d’un jeu, nous cherchons maintenant à identifier si certains genres semblent naturellement plus adaptés au speedrun que d’autres.
-
-Avant d’analyser les données, nous formulons l’hypothèse suivante :
-
-> Les jeux d’action, de plateforme ou de shooter devraient être les genres les plus représentés dans la communauté speedrun, car ils reposent souvent sur des mécaniques rapides, précises et facilement optimisables. À l’inverse, certains genres plus lents ou narratifs pourraient générer moins d’activité.
-
-Pour répondre à cette question, nous avons regroupé les jeux par genre puis calculé le nombre total de runs speedrun associés à chaque catégorie. Nous utilisons ici un **diagramme en barres horizontales**, particulièrement adapté pour comparer des volumes entre plusieurs catégories distinctes
-
-```{r, fig.width=10, fig.height=6, warning=FALSE, message=FALSE}
-speedrun_by_genre <- merged_games %>%
-  group_by(Genre) %>%
-  summarise(
-    total_runs = sum(nb_runs, na.rm = TRUE),
-    nb_games = n(),
-    .groups = "drop"
-  ) %>%
-  arrange(desc(total_runs))
-
-ggplot(speedrun_by_genre,
-       aes(x = reorder(Genre, total_runs),
-           y = total_runs)) +
-  
-  geom_col(fill = "steelblue") +
-  
-  coord_flip() +
-  
-  labs(
-    title = "Activité speedrun par genre de jeu",
-    x = "Genre",
-    y = "Nombre total de runs speedrun"
-  ) +
-  
-  theme_minimal()
-
-```
-
-Le graphique confirme globalement notre hypothèse : l’activité speedrun semble fortement liée à la nature des mécaniques de jeu.
-
-### Les genres dominants
-
-- **Platform & Action (leaders)** :  
-  les jeux de plateforme dominent largement l’activité speedrun grâce à leurs nombreuses possibilités d’optimisation : techniques avancées, glitches, raccourcis ou encore optimisation parfaite des trajectoires. Les jeux d’action suivent de près, portés par un gameplay dynamique et des stratégies souvent très complexes.
-
-- **Shooter & Racing** :  
-  les jeux de tir profitent également de leur rythme rapide et nerveux. Les jeux de course, quant à eux, sont naturellement adaptés au speedrun puisque leur gameplay repose déjà sur la recherche du meilleur temps et de la trajectoire parfaite.
-
-### Les genres en retrait
-
-- **Simulation, Strategy & Sports** :  
-  ces genres génèrent beaucoup moins de runs speedrun. Généralement centrés sur la réflexion, la gestion ou le réalisme, leurs mécaniques se prêtent moins à l’optimisation extrême et à la recherche du temps absolu.
-
-### Opportunités pour le studio *La Vague*
-
-Cette analyse nous donne plusieurs pistes importantes pour concevoir un jeu capable de fédérer une communauté speedrun active et durable. Notre futur jeu devra notamment intégrer :
-
-- **Vitesse et précision** :  
-  un gameplay dynamique et un rythme soutenu.
-
-- **Facile à apprendre, difficile à maîtriser** :  
-  des mécaniques accessibles mais offrant une forte marge de progression.
-
-- **Liberté d’optimisation** :  
-  laisser suffisamment de liberté aux joueurs pour développer leurs propres stratégies, techniques ou raccourcis.
-
-- **Forte rejouabilité** :  
-  une structure donnant envie de recommencer constamment afin d’améliorer ses performances.
-
-
+## 13. 
 \newpage
-## 3. Les jeux les mieux notés attirent-ils davantage les speedrunners ? {#q3-couplage}
+
+## 14. Les jeux les mieux notés attirent-ils davantage les speedrunners ?
 
 Après avoir identifié les genres les plus populaires auprès de la communauté speedrun, nous cherchons maintenant à comprendre si la qualité perçue d’un jeu influence également son activité speedrun.
 
@@ -1287,7 +1222,7 @@ Ces résultats suggèrent donc que la qualité globale d’un jeu joue probablem
 
 ---
 
-## 4. Quels constructeurs possèdent les communautés speedrun les plus actives ? {#q4-couplage}
+## 15. Quels constructeurs possèdent les communautés speedrun les plus actives ?
 @to-do: blabla
 
 ```{r, fig.width=10, fig.height=6, warning=FALSE, message=FALSE}
@@ -1332,3 +1267,5 @@ ggplot(speedrun_by_constructeur,
   theme_minimal()
 
 ```
+
+
