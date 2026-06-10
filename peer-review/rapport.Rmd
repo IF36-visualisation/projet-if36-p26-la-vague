@@ -264,7 +264,11 @@ Dans le dataset *Video Game Sales*, la variable `Platform` est codée sous forme
 # Analyse des ventes
 
 ```{r,include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+knitr::opts_chunk$set(
+  echo    = FALSE,
+  warning = FALSE,
+  message = FALSE
+)
 library(dplyr)
 library(ggplot2)
 library(readr)
@@ -282,6 +286,8 @@ library(patchwork)
 library(tidytext)
 library(treemapify)
 library(ggrepel)
+library(tidyverse)
+
 
 videoGameSales <- read_csv("../data/Video_Games_Sales_as_at_22_Dec_2016.csv")
 speedrun1 <- read_csv("../data/speedrun/leaderboards-data_part001.csv")
@@ -391,18 +397,18 @@ speedrun <- speedrun %>%
 
 sf_use_s2(FALSE)
 
-# 1. Extraction du code pays depuis playerLocation (partie avant le "/")
+
 speedrun <- speedrun %>%
   mutate(
     countryCode = str_to_upper(str_extract(playerLocation, "^[^/]+"))
   )
 
-# 2. Capitales nationales et leurs coordonnées (Natural Earth)
+
 capitales <- ne_download(
   scale = 110, type = "populated_places", category = "cultural",
   returnclass = "sf"
 ) %>%
-  filter(FEATURECLA == "Admin-0 capital") %>%        # uniquement les capitales
+  filter(FEATURECLA == "Admin-0 capital") %>%        
   mutate(coords = st_coordinates(geometry)) %>%
   transmute(
     countryCode = ISO_A2,
@@ -410,13 +416,12 @@ capitales <- ne_download(
     lat = coords[, 2]
   ) %>%
   st_drop_geometry() %>%
-  group_by(countryCode) %>% slice(1) %>% ungroup()    # 1 ligne par pays (évite les doublons)
+  group_by(countryCode) %>% slice(1) %>% ungroup()
 
-# 3. Jointure des coordonnées
+
 speedrun <- speedrun %>%
   left_join(capitales, by = "countryCode")
 
-# 4. Nom du pays en français + région (continent)
 speedrun <- speedrun %>%
   mutate(
     paysNom = countrycode(countryCode, origin = "iso2c",
@@ -506,7 +511,7 @@ Le marché ne suit pas une logique équilibrée mais une logique de paliers domi
 Dans la continuité de l'analyse précédente, nous affinons notre étude de marché à l'échelle régionale : les plateformes dominantes au niveau mondial le sont-elles partout ? La réponse conditionne le choix du support selon le marché que notre jeu cherchera à conquérir. Nous supposons que les préférences des joueurs varient d'une région à l'autre, en fonction des habitudes culturelles et de la présence historique des constructeurs, et cherchons donc à identifier les plateformes dominantes en Amérique du Nord, en Europe, au Japon et dans les autres régions.
 
 ```{r}
-# Agréger les ventes par plateforme
+
 sales_by_platform <- videoGameSales %>%
   group_by(Platform) %>%
   summarise(
@@ -517,7 +522,7 @@ sales_by_platform <- videoGameSales %>%
     .groups = "drop"
   )
 
-# Passer en format long
+
 sales_long <- sales_by_platform %>%
   pivot_longer(
     cols = -Platform,
@@ -525,7 +530,7 @@ sales_long <- sales_by_platform %>%
     values_to = "Sales"
   )
 
-# Ajouter la colonne Constructeur
+
 sales_long <- sales_long %>%
   mutate(Constructeur = case_when(
     Platform %in% c("PS2", "PS3", "PS", "PS4", "PSP", "PSV") ~ "Sony",
@@ -537,14 +542,14 @@ sales_long <- sales_long %>%
     TRUE ~ "Autre"
   ))
 
-# Garder le top 10 de chaque région
+
 top10_by_region <- sales_long %>%
   group_by(Region) %>%
   arrange(desc(Sales), .by_group = TRUE) %>%
   slice_head(n = 10) %>%
   ungroup()
 
-# Identifiant unique pour ordonner dans chaque facette + ordre des régions
+
 top10_by_region <- top10_by_region %>%
   mutate(
     Platform_region = paste(Platform, Region, sep = "____"),
@@ -554,7 +559,7 @@ top10_by_region <- top10_by_region %>%
     )
   )
 
-# Graphique
+
 ggplot(top10_by_region, aes(x = reorder(Platform_region, Sales), y = Sales, fill = Constructeur)) +
   geom_col() +
   coord_flip() +
@@ -737,7 +742,7 @@ Après les genres et les plateformes, nous descendons au niveau des jeux eux-mê
 
 
 ```{r}
-# Agréger les ventes par jeu
+
 sales_by_game <- videoGameSales %>%
   group_by(Name) %>%
   summarise(
@@ -747,7 +752,6 @@ sales_by_game <- videoGameSales %>%
     `Autres régions` = sum(Other_Sales, na.rm = TRUE),
   )
 
-# Passer en format long
 sales_long <- sales_by_game %>%
   pivot_longer(
     cols = -Name,
@@ -755,15 +759,14 @@ sales_long <- sales_by_game %>%
     values_to = "Sales"
   )
 
-# Garder le top 10 de chaque région
+
 top10_by_region <- sales_long %>%
   group_by(Region) %>%
   arrange(desc(Sales), .by_group = TRUE) %>%
   slice_head(n = 10) %>%
   ungroup()
 
-# Créer un identifiant unique pour bien ordonner dans chaque facette : Wii Sports devient Wii Sports___Europe 
-# Changement d'ordre d'afficheage des régions 
+
 top10_by_region <- top10_by_region %>%
   mutate(
     Name_region = paste(Name, Region, sep = "____"),
@@ -773,7 +776,6 @@ top10_by_region <- top10_by_region %>%
     )
   )
 
-# Graphique
 ggplot(top10_by_region, aes(x = reorder(Name_region, Sales), y = Sales)) +
   geom_col(fill = "#4C78A8") +
   coord_flip() +
@@ -806,15 +808,15 @@ Nous imaginons que le nombre de runs le plus élevé sera atteint par des jeux t
 
 
 ```{r echo=FALSE}
-# 1. Compter les runs par jeu
+
 runs_par_jeu <- speedrun %>%
   count(gameName, name = "nb_runs")
 
-# 2. Garder les 15 jeux avec le plus de runs
+
 top_jeux <- runs_par_jeu %>%
   slice_max(nb_runs, n = 15)
 
-# 3. Tracer
+
 ggplot(top_jeux, aes(x = nb_runs, y = reorder(gameName, nb_runs))) +
   geom_col(fill = "steelblue") +
   labs(
@@ -840,17 +842,17 @@ Au vu des caractéristiques propres au speedrun (rejouabilité, sessions courtes
 
 
 ```{r echo=FALSE}
-# 1. Compter les runs par genre (en retirant les NA)
+
 runs_par_genre <- speedrun %>%
   filter(!is.na(genreName)) %>%
   mutate(genreName = if_else(genreName == "First-person shooter", "FPS", genreName)) %>%
   count(genreName, name = "nb_runs")
 
-# 2. Garder les 15 genres avec le plus de runs
+
 top_genres <- runs_par_genre %>%
   slice_max(nb_runs, n = 15)
 
-# 3. Tracer
+
 ggplot(top_genres, aes(x = nb_runs, y = reorder(genreName, nb_runs))) +
   geom_col(fill = "steelblue") +
   labs(
@@ -906,16 +908,15 @@ La question est cruciale : il nous faut choisir la bonne plateforme pour sortir 
 Nous imaginons que la plateforme la plus speedrunnée sera le PC, son caractère universel le rendant accessible au plus grand nombre.
 
 ```{r echo=FALSE, fig.height=6, fig.width=10, message=FALSE, warning=FALSE}
-# 1. Compter les runs par plateforme (en retirant les NA)
+
 runs_par_plateforme <- speedrun %>%
   filter(!is.na(platformName)) %>%
   count(platformName, name = "nb_runs")
 
-# 2. Garder les 15 plateformes les plus populaires
+
 top_plateformes <- runs_par_plateforme %>%
   slice_max(nb_runs, n = 15)
 
-# 3. Tracer
 ggplot(top_plateformes, aes(x = nb_runs, y = reorder(platformName, nb_runs))) +
   geom_col(fill = "steelblue") +
   labs(
@@ -944,7 +945,7 @@ speedrun_temps <- speedrun %>%
     scopeType == "full-game"
   )
 
-mediane_temps <- median(speedrun_temps$realTime)   # en secondes
+mediane_temps <- median(speedrun_temps$realTime)
 moyenne_temps <- mean(speedrun_temps$realTime)
 
 ggplot(speedrun_temps, aes(x = realTime)) +
@@ -983,45 +984,73 @@ Après avoir caractérisé la durée des runs, nous cherchons à localiser où s
 Nous imaginons que les États-Unis et les pays occidentaux anglophones dominent largement, du fait de leurs grandes communautés de joueurs, d'un bon accès à internet et du fait que la plateforme speedrun.com soit anglophone.
 
 
-```{r echo=FALSE}
+```{r carte-runs, fig.width=9, fig.height=11, out.width="65%", fig.align="center"}
+
+monde <- ne_countries(scale = "medium", returnclass = "sf")
+
+runs_pays <- speedrun %>%
+  filter(!is.na(countryCode)) %>%
+  count(countryCode, paysNom, name = "nb_runs") %>%
+  mutate(countryCode = toupper(sub("/.*", "", countryCode)))
+
+monde_runs <- monde %>%
+  left_join(runs_pays, by = c("iso_a2_eh" = "countryCode"))
+
 runs_geo <- speedrun %>%
   filter(!is.na(lon), !is.na(paysNom)) %>%
   count(paysNom, region, lon, lat, name = "nb_runs")
 
+
+lim_runs <- range(monde_runs$nb_runs, na.rm = TRUE)
+
+
 top_pays <- runs_geo %>% slice_max(nb_runs, n = 15)
 
-carte_monde <- ggplot() +
-  annotation_borders("world", fill = "grey95", colour = "grey85") +
-  geom_point(
-    data = runs_geo %>% arrange(desc(nb_runs)),
-    aes(x = lon, y = lat, size = nb_runs, colour = nb_runs),
-    alpha = 0.7
-  ) +
+carte_monde <- ggplot(monde_runs) +
+  geom_sf(aes(fill = nb_runs), colour = "grey85", linewidth = 0.1) +
   geom_text_repel(
     data = top_pays,
     aes(x = lon, y = lat, label = paysNom),
-    size          = 3,
-    arrow         = arrow(length = unit(0.012, "npc")),  # la flèche
-    segment.color = "grey40",
-    segment.size  = 0.3,
-    box.padding   = 0.7,
-    max.overlaps  = Inf
+    size = 3, arrow = arrow(length = unit(0.012, "npc")),
+    segment.color = "grey40", segment.size = 0.3,
+    box.padding = 0.7, max.overlaps = Inf
   ) +
-  scale_colour_gradient(
-    low   = "#deebf7",
-    high  = "#08519c",
-    trans = "log10"
+  scale_fill_gradient(
+    low = "#deebf7", high = "#08519c",
+    trans = "log10", na.value = "grey95", limits = lim_runs
   ) +
-  scale_size_continuous(range = c(0.5, 6), trans = "log10") +
-  coord_quickmap() +
-  labs(
-    title    = "Nombre de runs par pays (échelle log)",
-    x = NULL, y = NULL,
-    colour = "Nb de runs", size = "Nb de runs"
-  ) +
+  coord_sf(expand = FALSE) +
+  labs(title = "Monde", x = NULL, y = NULL, fill = "Nb de runs") +
   theme_void()
 
-carte_monde
+sf_use_s2(FALSE)
+bbox_europe <- c(xmin = -25, xmax = 45, ymin = 34, ymax = 72)
+europe_runs <- st_crop(monde_runs, bbox_europe)
+
+top_europe <- runs_geo %>%
+  filter(between(lon, -25, 45), between(lat, 34, 72)) %>%
+  slice_max(nb_runs, n = 12)
+
+carte_europe <- ggplot(europe_runs) +
+  geom_sf(aes(fill = nb_runs), colour = "grey85", linewidth = 0.1) +
+  geom_text_repel(
+    data = top_europe,
+    aes(x = lon, y = lat, label = paysNom),
+    size = 3, arrow = arrow(length = unit(0.012, "npc")),
+    segment.color = "grey40", segment.size = 0.3,
+    box.padding = 0.7, max.overlaps = Inf
+  ) +
+  scale_fill_gradient(
+    low = "#deebf7", high = "#08519c",
+    trans = "log10", na.value = "grey95", limits = lim_runs
+  ) +
+  coord_sf(xlim = c(-25, 45), ylim = c(34, 72), expand = FALSE) +
+  labs(title = "Focus Europe", x = NULL, y = NULL, fill = "Nb de runs") +
+  theme_void()
+
+carte_monde / carte_europe +
+  plot_layout(guides = "collect") +
+  plot_annotation(title = "Nombre de runs par pays (échelle log)")
 ```
 
 La carte confirme l'hypothèse et dessine une géographie nette : les États-Unis dominent largement, suivis d'un bloc occidental dense (Royaume-Uni, France, Allemagne et le reste de l'Europe de l'Ouest), complété par le Brésil, le Canada, l'Australie et le Japon. L'activité speedrun se concentre donc en Amérique du Nord et en Europe de l'Ouest.
@@ -1080,7 +1109,6 @@ Après avoir étudié séparément les ventes de jeux vidéo et l’activité de
 
 ```{r}
 clean_name <- function(x) {
-  # Fonction permettant de normaliser les noms de pour le couplage
   x %>%
     str_to_lower() %>%
     stringi::stri_trans_general("Latin-ASCII") %>%
@@ -1089,7 +1117,7 @@ clean_name <- function(x) {
   }
 
 
-# Création d'un dataset agrégé pour les données speedrun : une ligne par jeu avec toutes les données 
+
 speedrun_games <- speedrun %>%
   mutate(game_clean = clean_name(gameName)) %>%
   group_by(game_clean, gameName) %>%
@@ -1102,7 +1130,7 @@ speedrun_games <- speedrun %>%
   )
 
 
-# Nettoyage préalable du score utilisateur
+
 videoGameSales <- videoGameSales %>%
   mutate(
     User_Score = na_if(User_Score, "tbd"),
@@ -1110,7 +1138,7 @@ videoGameSales <- videoGameSales %>%
   )
 
 
-# Création d'un dataset agrégé pour les ventes: une suele ligne par jeu
+
 sales_games <- videoGameSales %>%
   group_by(Name) %>%
   summarise(
@@ -1130,7 +1158,6 @@ sales_games <- videoGameSales %>%
   )
 
 
-# Couplage final entre les deux datasets.
 merged_games <- sales_games %>%
   inner_join(speedrun_games, by = "game_clean")
 
@@ -1147,7 +1174,7 @@ Nous cherchons ici à savoir si les jeux les plus vendus en Europe sont aussi ce
 Pour répondre à cette question, nous comparons les ventes européennes (`EU_Sales`) et le nombre de runs speedrun (`nb_runs`) à l’aide d’un nuage de points en échelle logarithmique.
 
 ```{r, fig.width=10, fig.height=6, warning=FALSE, message=FALSE}
-# Préparation des données
+
 quadrant_data <- merged_games %>%
   filter(
     EU_Sales > 0,
@@ -1165,7 +1192,7 @@ quadrant_data <- merged_games %>%
     )
   )
 
-# Jeux à afficher en label
+
 label_games <- quadrant_data %>%
   filter(quadrant != "Faibles ventes + faible speedrun") %>%
   arrange(desc(EU_Sales + nb_runs / 100)) %>%
@@ -1273,7 +1300,6 @@ Pour répondre à cette question, nous comparons les ventes mondiales totales de
 
 
 ```{r, fig.width=10, fig.height=6, warning=FALSE, message=FALSE}
-# Total des ventes et runs par genre
 sales_by_genre <- merged_games %>%
   group_by(Genre) %>%
   summarise(
@@ -1282,20 +1308,18 @@ sales_by_genre <- merged_games %>%
     .groups = "drop"
   )
 
-# Scatter plot
+
 ggplot(sales_by_genre,
        aes(x = total_sales,
            y = total_runs,
            label = Genre)) +
 
-  # Points
   geom_point(
     aes(color = "Genres"),
     size = 4,
     alpha = 0.8
   ) +
 
-  # Droite de tendance
   geom_smooth(
     aes(linetype = "Tendance générale"),
     method = "lm",
@@ -1304,13 +1328,13 @@ ggplot(sales_by_genre,
     linewidth = 1.2
   ) +
 
-  # Labels
+
   geom_text_repel(
     size = 4,
     max.overlaps = 20
   ) +
 
-  # Couleurs légende
+
   scale_color_manual(
     name = "",
     values = c(
@@ -1318,7 +1342,7 @@ ggplot(sales_by_genre,
     )
   ) +
 
-  # Ligne légende
+
   scale_linetype_manual(
     name = "",
     values = c(
@@ -1353,7 +1377,6 @@ Pour répondre à cette question, nous comparons les ventes européennes totales
 
 
 ```{r, fig.width=9, fig.height=7, warning=FALSE, message=FALSE}
-# Ventes et runs par plateforme
 sales_by_platform <- merged_games %>%
   group_by(Platform) %>%
   summarise(
@@ -1362,7 +1385,6 @@ sales_by_platform <- merged_games %>%
     .groups = "drop"
   ) %>%
   
-  # Attribution du constructeur
   mutate(
     Constructeur = case_when(
       Platform %in% c("PS2", "PS3", "PS", "PS4", "PSP", "PSV") ~ "Sony",
@@ -1375,20 +1397,20 @@ sales_by_platform <- merged_games %>%
     )
   )
 
-# Scatter plot
+
 ggplot(sales_by_platform,
        aes(x = total_sales,
            y = total_runs,
            label = Platform,
            color = Constructeur)) +
 
-  # Points
+
   geom_point(
     size = 4,
     alpha = 0.85
   ) +
 
-  # Droite de tendance
+
   geom_smooth(
     aes(linetype = "Tendance générale"),
     method = "lm",
@@ -1397,18 +1419,16 @@ ggplot(sales_by_platform,
     linewidth = 1.2
   ) +
 
-  # Labels
   geom_text_repel(
     size = 4,
     max.overlaps = 25
   ) +
 
-  # Couleurs personnalisées
+
 scale_color_manual(
   values = palette_plateformes
 ) +
 
-# Ligne de tendance
 scale_linetype_manual(
   name = "",
   values = c(
@@ -1453,7 +1473,7 @@ Pour répondre à cette question, nous calculons le ratio suivant :
 ```{r, fig.width=10, fig.height=6, warning=FALSE, message=FALSE}
 
 
-# Calcul d'un indicateur de densité communautaire
+
 community_density <- merged_games %>%
   filter(
     nb_players > 0,
@@ -1463,12 +1483,11 @@ community_density <- merged_games %>%
     runs_par_joueur = nb_runs / nb_players
   )
 
-# Jeux avec communauté très investie
+
 top_density <- community_density %>%
   arrange(desc(runs_par_joueur)) %>%
   slice_head(n = 20)
 
-# Heatmap
 ggplot(top_density,
        aes(
          x = reorder(Name, runs_par_joueur),
@@ -1616,7 +1635,7 @@ Pour répondre à cette question, nous comparons le profil moyen des jeux appart
 - le nombre de plateformes ;
 - les ventes globales
 
-```{r, fig.width=9, fig.height=7, warning=FALSE, message=FALSE}
+```{r,fig.width=9, fig.height=11, out.width="45%", fig.align="center"}
 radar_data <- merged_games %>%
   mutate(
     groupe = ifelse(
@@ -1690,15 +1709,12 @@ radarchart(
   title = "Profil moyen des jeux les plus speedrunnés"
 )
 
-# Valeurs numériques normalisées
 values_to_label <- radar_plot_data[-c(1, 2), ]
 n_var <- ncol(values_to_label)
 angles <- seq(90, 450, length.out = n_var + 1)[-(n_var + 1)] * pi / 180
 
-# Afficher uniquement les valeurs du groupe principal
 vals <- as.numeric(values_to_label[1, ])
 
-# Décalage léger pour éviter le chevauchement
 offsets <- c(10, 6, 6, 6, 6, 6)
 
 x <- ((vals + offsets) / 100) * cos(angles)
