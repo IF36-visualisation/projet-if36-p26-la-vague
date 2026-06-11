@@ -1363,7 +1363,7 @@ Après avoir étudié les genres, nous cherchons maintenant à savoir si les pla
 
 > Les plateformes les plus vendues devraient globalement être aussi les plus speedrunnées. Nous nous attendons toutefois à une domination plus marquée des plateformes Nintendo, historiquement très présentes dans la communauté speedrun.
 
-Pour répondre à cette question, nous comparons les ventes européennes totales de chaque plateforme au nombre total de runs speedrun associés. Nous utilisons un nuage de points (*scatter plot*) afin d’étudier la relation entre ces deux variables.
+Pour répondre à cette question, nous comparons les ventes européennes totales de chaque plateforme au nombre total de runs speedrun associés. Nous utilisons un nuage de points (*scatter plot*) afin d’étudier la relation entre ces deux variables
 
 
 ```{r, fig.width=9, fig.height=7, warning=FALSE, message=FALSE}
