@@ -264,7 +264,7 @@ Dans le dataset *Video Game Sales*, la variable `Platform` est codée sous forme
 # Analyse des ventes
 
 ```{r,include=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 library(dplyr)
 library(ggplot2)
 library(readr)
@@ -274,6 +274,14 @@ library(lubridate)
 library(stringr)
 library(stringi)
 library(fmsb)
+library(scales)
+library(countrycode)
+library(rnaturalearth)
+library(sf)
+library(patchwork)
+library(tidytext)
+library(treemapify)
+library(maps)
 
 
 videoGameSales <- read_csv("../data/Video_Games_Sales_as_at_22_Dec_2016.csv")
@@ -286,12 +294,20 @@ speedrun0 <- bind_rows(speedrun1, speedrun2, speedrun3, speedrun4)
 games_data0 <- read_csv2("../data/speedrun/games-data.csv")
 genres_data0 <- read_csv2("../data/speedrun/genres-data.csv")
 platforms_data0 <- read_csv("../data/speedrun/platforms-data.csv")
+users_data0 <- read_csv("../data/speedrun/users-data.csv")
+variables_data0 <- read_csv("../data/speedrun/variables-data.csv")
 
 palette_regions <- c(
-  "Amérique du Nord" = "#80b1d3",  
-  "Europe" = "#bebada",            
-  "Japon" = "#fb8072",             
-  "Autre" = "gray70"              
+  "Amérique du Nord"= "#80b1d3",
+  "Japon"           = "#fb8072",
+  "Autres régions"  = "gray70",
+  "Europe"          = "#bebada",  
+  "Amériques"       = "#80b1d3",  
+  "Asie"            = "#fb8072",  
+  "Afrique"         = "#fdb462",  
+  "Océanie"         = "#b3de69",  
+  "Antarctique"     = "#8dd3c7",  
+  "Autre"           = "gray70"    
 )
 
 palette_plateformes <- c(
@@ -312,6 +328,16 @@ games_data <- games_data0
 genres_data <- genres_data0
 platforms_data <- platforms_data0
 speedrun <- speedrun0
+users_data <- users_data0
+variables_data <- variables_data0
+
+variables_data <- variables_data %>%
+  select(category, scopeType) %>%
+  distinct()
+
+users_data <- users_data %>%
+  select(userId, location) %>%
+  rename(playerLocation = location)
 
 speedrun <- speedrun %>%
   mutate(verifiedDate = as.Date(verifiedDate)) %>%
@@ -342,17 +368,70 @@ speedrun <- speedrun %>%
   ) %>%
   left_join(platforms_data, by = "platformId") %>%
   left_join(genres_data, by = "genreId") %>%
+  left_join(users_data, by = c("players" = "userId")) %>%
+  left_join(variables_data, by = c("categoryId" = "category")) %>%
   mutate(dateJeu = dmy(releaseDateGame)) %>%
+
   select(
     gameName,
     genreName,
     platformName,
-    platform,        
+    platform,
     categoryId,
     runId,
     players,
+    playerLocation,
+    scopeType,
     verifiedDate,
-    dateJeu
+    dateJeu,
+    realTime
+  )
+```
+
+```{r}
+
+sf_use_s2(FALSE)
+
+# 1. Extraction du code pays depuis playerLocation (partie avant le "/")
+speedrun <- speedrun %>%
+  mutate(
+    countryCode = str_to_upper(str_extract(playerLocation, "^[^/]+"))
+  )
+
+# 2. Capitales nationales et leurs coordonnées (Natural Earth)
+capitales <- ne_download(
+  scale = 110, type = "populated_places", category = "cultural",
+  returnclass = "sf"
+) %>%
+  filter(FEATURECLA == "Admin-0 capital") %>%        # uniquement les capitales
+  mutate(coords = st_coordinates(geometry)) %>%
+  transmute(
+    countryCode = ISO_A2,
+    lon = coords[, 1],
+    lat = coords[, 2]
+  ) %>%
+  st_drop_geometry() %>%
+  group_by(countryCode) %>% slice(1) %>% ungroup()    # 1 ligne par pays (évite les doublons)
+
+# 3. Jointure des coordonnées
+speedrun <- speedrun %>%
+  left_join(capitales, by = "countryCode")
+
+# 4. Nom du pays en français + région (continent)
+speedrun <- speedrun %>%
+  mutate(
+    paysNom = countrycode(countryCode, origin = "iso2c",
+                          destination = "country.name.fr", warn = FALSE),
+    region  = countrycode(countryCode, origin = "iso2c",
+                          destination = "continent",
+                          custom_match = c("EU" = "Europe"), warn = FALSE),
+    region  = recode(region,
+      "Americas"   = "Amériques",
+      "Asia"       = "Asie",
+      "Africa"     = "Afrique",
+      "Oceania"    = "Océanie",
+      "Antarctica" = "Antarctique"
+    )
   )
 ```
 
@@ -383,7 +462,7 @@ nrow(speedrun)-sum(jeux_incomplets$nb_runs)
 
 ## 1. Quelles plateformes ont généré le plus de ventes à l'échelle mondiale ?
 
-Pour débuter notre exploration, nous cherchons à identifier quelles plateformes ont généré le plus de ventes de jeux à l’échelle mondiale. Avant de visualiser les données, nous pouvons supposer que le marché est historiquement écrasé par quelques consoles phares de constructeurs majeurs (comme Sony ou Nintendo), mais nous nous demandons si cette domination se concentre sur une ou deux machines, ou si la répartition est plus équilibrée entre les différentes générations de consoles.
+Dans l'optique de concevoir et de commercialiser le jeu parfait, nous débutons par une étude du marché : quelles plateformes ont généré le plus de ventes à l'échelle mondiale ? Identifier les machines dominantes nous indiquera sur quel support viser pour maximiser l'audience potentielle de notre jeu. Nous supposons que le marché est historiquement écrasé par quelques consoles phares de constructeurs majeurs (Sony, Nintendo), mais nous nous demandons si cette domination se concentre sur une ou deux machines, ou si elle se répartit entre les différentes générations.
 
 ```{r}
 
@@ -419,15 +498,13 @@ ggplot(ventes_par_plateforme,
   theme_minimal() 
 ```
 
-Sur le graphique, on constate que le marché n'est pas équilibré, mais qu'il répond plutôt à une logique de paliers avec un leader incontesté. On observe en effet une domination écrasante de la PS2, qui cumule à elle seule plus de 1,2 milliard de jeux vendus à travers le monde. En dessous de ce record, un premier palier regroupe des consoles extrêmement populaires ayant généré entre 700 et 1000 millions de ventes (la Xbox 360, la PS3, la Wii, la DS et la PS1). Vient ensuite un second grand groupe concentré entre 200 et 350 millions de ventes.
-
-Ces résultats répondent clairement à notre question initiale : l'industrie est largement dominée par deux acteurs historiques. D'un côté, Sony fait figure de leader en volume grâce au succès titanesque de la PS2 et à la présence de toutes ses consoles de salon (PS1, PS3, PS4) dans le haut du classement. De l'autre, Nintendo se démarque par une occupation massive du marché : le constructeur place 10 consoles différentes dans ce top 25 (Wii, DS, GBA, etc.). La grande diversité des périodes de sortie des machines de Nintendo souligne l'incroyable longévité de la firme nipponeà l'inverse de Sega qui n'a pas su durer dans le temps.
+Le marché ne suit pas une logique équilibrée mais une logique de paliers dominée par deux acteurs historiques. Sony s'impose en volume, porté par le succès titanesque de la PS2 et par la présence de toute sa gamme de salon (PS1, PS3, PS4) en haut du classement. Nintendo se distingue lui par l'étendue de son catalogue de machines et une longévité remarquable, là où Sega n'a pas su durer dans le temps. Pour notre jeu, l'enseignement est direct : viser un support à très large parc installé, typiquement une console Sony ou Nintendo de sa génération, conditionne fortement l'audience commerciale atteignable — un lancement sur une plateforme marginale partirait avec un handicap structurel.
 
 \newpage
 
-## 2. Quelles sont les plateformes qui ont générées le plus de ventes par région ? {#q2-plateformes-region}
+## 2. Quelles sont les plateformes qui ont générées le plus de ventes par région ?
 
-Dans la continuité de l’analyse précédente, nous cherchons ici à comprendre si les plateformes les plus performantes à l’échelle mondiale le sont également au niveau régional. On peut supposer que les préférences des joueurs varient selon les régions, notamment en fonction des habitudes culturelles et de la présence historique des constructeurs. L’objectif est donc d’identifier les plateformes dominantes en Amérique du Nord, en Europe, au Japon et dans les autres régions.
+Dans la continuité de l'analyse précédente, nous affinons notre étude de marché à l'échelle régionale : les plateformes dominantes au niveau mondial le sont-elles partout ? La réponse conditionne le choix du support selon le marché que notre jeu cherchera à conquérir. Nous supposons que les préférences des joueurs varient d'une région à l'autre, en fonction des habitudes culturelles et de la présence historique des constructeurs, et cherchons donc à identifier les plateformes dominantes en Amérique du Nord, en Europe, au Japon et dans les autres régions.
 
 ```{r}
 # Agréger les ventes par plateforme
@@ -494,15 +571,13 @@ ggplot(top10_by_region, aes(x = reorder(Platform_region, Sales), y = Sales, fill
   theme_minimal()
 ```
 
-Les graphiques mettent en évidence des différences régionales marquées. En Amérique du Nord, la Xbox 360 domine nettement, même si les consoles Sony comme la PlayStation 2 et la PlayStation 3 restent très présentes. En Europe, la domination de Sony est plus claire, avec la PS2 et la PS3 en tête, suivies par la Xbox 360. On note également une présence plus marquée du PC, qui atteint des niveaux de ventes élevés comparés aux autres régions.
+Les graphiques révèlent des marchés aux logiques nettement distinctes. Les régions occidentales se ressemblent, l'Amérique du Nord penche vers Microsoft (Xbox 360) tout en restant solidement Sony, l'Europe est plus franchement Sony et se singularise par un PC bien plus présent qu'ailleurs, tandis que le Japon fonctionne en circuit quasi fermé, dominé par les consoles Nintendo et notamment les portables, Microsoft et le PC y étant marginaux. Les autres régions s'alignent sur le modèle européen.
 
-Le Japon présente un contraste très fort : les consoles Nintendo, en particulier la Nintendo DS, dominent largement, accompagnées d’autres plateformes comme la Nintendo 3DS ou la Super Nintendo Entertainment System. Cette domination souligne une préférence pour les consoles portables et les acteurs locaux, tandis que le PC et Microsoft y sont très peu présents.
-
-Enfin, les autres régions suivent une tendance proche de l’Europe, avec une domination des consoles Sony, notamment la PS2 et la PS3, et une présence plus secondaire de Microsoft et du PC.
+Pour notre jeu, l'enseignement est qu'il n'existe pas de support universel : le choix dépend du marché ciblé. Une stratégie multiplateforme (Sony, Xbox, PC) couvre efficacement l'Occident, mais toucher le Japon imposerait une présence sur l'écosystème Nintendo, à contre-courant de nos autres marchés. La force singulière du PC en Europe est par ailleurs à noter, d'autant qu'elle recoupe la plateforme reine du speedrun que nous identifierons plus loin.
 
 \newpage
 
-## 3. Quels sont les genres de jeux vidéo qui génèrent le plus de ventes au niveau mondiale ? {#q3-genres}
+## 3. Quels sont les genres de jeux vidéo qui génèrent le plus de ventes au niveau mondiale ?
 
 L’objectif ici est d’identifier les **genres** qui génèrent le plus de ventes à l’échelle mondiale. On peut s’attendre à ce que certains genres plus "populaires", comme les jeux d’action ou de sport, dominent le marché.
 
@@ -608,11 +683,7 @@ Ainsi, le succès global d’un jeu apparaît comme le résultat d’une combina
 
 ## 6. Observe-t-on des différences régionales dans les préférences de plateformes ou de genres ? {#q6-differences}
 
-L’objectif ici est d’examiner si les **préférences des joueurs varient selon les régions du monde** (Amérique du Nord, Europe, Japon, autres régions), que ce soit en termes de **genres de jeux** ou de **plateformes**.
-
-On peut formuler l’hypothèse suivante : certaines régions présentent des préférences marquées. Par exemple, le **Japon** pourrait davantage privilégier les jeux de rôle (*RPG*) ou les consoles locales, tandis que l’**Amérique du Nord** et l’**Europe** pourraient être plus orientées vers les jeux d’action ou de sport.
-
-Afin de tester cette hypothèse, nous allons comparer les **ventes par genre selon les régions**. Cela permettra d’identifier les genres dominants dans chaque zone géographique.
+Pour orienter le genre de notre futur jeu, nous examinons si les préférences des joueurs varient selon les régions (Amérique du Nord, Europe, Japon, autres) : un genre porteur sur un marché ne l'est pas nécessairement ailleurs, ce qui pèse sur le positionnement à adopter. Nous formulons l'hypothèse suivante : le Japon privilégierait les jeux de rôle (RPG), tandis que l'Amérique du Nord et l'Europe seraient plus orientées vers l'action ou le sport. Pour la tester, nous comparons les ventes par genre selon les régions.
 
 ```{r}
 sales_by_genre_region <- videoGameSales %>%
@@ -653,27 +724,17 @@ ggplot(sales_long, aes(x = Sales, y = reorder(Genre, Sales), fill = Region)) +
   )
 ```
 
-On observe tout d’abord que l’**Amérique du Nord** domine largement les ventes pour la plupart des genres, notamment **Action**, **Sports** et **Shooter**, qui apparaissent comme les catégories les plus populaires. L’**Europe** présente un profil assez similaire, bien que les volumes de ventes soient légèrement inférieurs, ce qui suggère des préférences proches entre ces deux régions occidentales.
+Le graphique confirme l'hypothèse et oppose deux modèles de marché. L'Occident, Amérique du Nord et Europe aux profils très proches, aiment les genres d'action et de compétition (Action, Sports, Shooter), l'Amérique du Nord menant simplement en volume. Le Japon suit une logique inverse, nettement tourné vers les RPG et les expériences narratives, là où Shooter et Sports restent secondaires. Les autres régions s'alignent sur le modèle occidental.
 
-En revanche, le **Japon** se distingue nettement par une préférence beaucoup plus marquée pour les **Role-Playing Games (RPG)**, où les ventes sont particulièrement élevées comparées aux autres régions. À l’inverse, les genres comme **Shooter** ou **Sports**, très populaires en Amérique du Nord et en Europe, y restent beaucoup moins dominants. Cela reflète des différences culturelles importantes dans les types de jeux appréciés.
+Pour notre jeu, l'enseignement rejoint celui des plateformes : il n'y a pas de genre universel. Un jeu d'action ou de sport viserait naturellement les grands marchés occidentaux, mais resterait peu adapté au Japon, qui exigerait un positionnement narratif. 
 
-Les **autres régions** affichent globalement des niveaux de ventes plus faibles, mais suivent une tendance relativement proche de celle de l’Europe, avec une popularité notable des genres **Action** et **Sports**.
-
-Ainsi, le graphique confirme clairement notre hypothèse : les préférences en matière de jeux vidéo varient selon les régions du monde. Tandis que les marchés occidentaux sont dominés par des genres orientés action et compétition, le Japon se démarque par un attrait plus fort pour les expériences narratives et immersives comme les RPG.
-
-Le graphique met en évidence des **différences régionales marquées dans les préférences de genres**.
+Cibler simultanément ces marchés suppose donc un genre suffisamment hybride, ou un choix assumé de concentrer nos efforts sur l'Occident (d'autant que c'est là, nous le verrons, que se trouve aussi l'essentiel de la communauté speedrun.)
 
 \newpage
 
 ## 7. Quelles sont les préférences régionales en termes de jeux ?
 
-Après avoir identifié les jeux les plus vendus à l’échelle mondiale, puis analysé les différences régionales en matière de **genres** et de **plateformes**, nous cherchons ici à approfondir l’analyse en nous intéressant directement aux **jeux eux-mêmes**.
-
-L’objectif est de déterminer si les jeux les plus populaires au niveau mondial dominent également dans toutes les régions, ou si des **préférences locales spécifiques** émergent lorsque l’on observe les classements région par région.
-
-Pour cela, nous avons agrégé les ventes par jeu pour chaque région (Amérique du Nord, Europe, Japon et autres régions), puis extrait le **top 10 des jeux les plus vendus** dans chacune d’entre elles. Les résultats sont présentés sous forme de graphique en facettes, permettant de comparer facilement les classements.
-
-D’un point de vue méthodologique, un identifiant unique combinant le nom du jeu et la région a été utilisé afin de garantir un tri correct dans chaque facette, assurant ainsi une lecture claire des résultats.
+Après les genres et les plateformes, nous descendons au niveau des jeux eux-mêmes pour affiner notre étude de marché : les titres les plus populaires mondialement dominent-ils partout, ou des préférences locales émergent-elles région par région ? La réponse nous dit dans quelle mesure un même jeu peut s'imposer sur tous nos marchés cibles. Pour cela, nous avons agrégé les ventes par jeu et par région, puis extrait le top 10 de chacune, présenté en facettes pour comparer les classements.
 
 
 ```{r}
@@ -728,13 +789,9 @@ ggplot(top10_by_region, aes(x = reorder(Name_region, Sales), y = Sales)) +
 
 ```
 
-L’analyse met en évidence des **similitudes importantes entre l’Amérique du Nord et l’Europe**, où l’on retrouve une grande partie des mêmes jeux en tête des ventes. Cela confirme les observations précédentes : ces deux régions partagent des préférences proches, notamment pour des jeux grand public issus de grandes franchises internationales.
+L'analyse prolonge directement les constats précédents. L'Amérique du Nord et l'Europe partagent largement les mêmes têtes de classement, des jeux grand public issus de grandes franchises internationales, confirmant la proximité de ces deux marchés occidentaux. Le Japon, lui, se referme sur des licences locales, essentiellement Nintendo (Pokémon, Super Mario), en cohérence avec sa préférence marquée pour les RPG.
 
-En revanche, **le Japon se distingue nettement**. Son classement est largement dominé par des licences locales, notamment issues de Nintendo, telles que *Pokémon* ou *Super Mario*. Ce résultat est cohérent avec l’analyse des genres, qui montrait une forte préférence pour les jeux de type **RPG** dans cette région.
-
-Les **autres régions** présentent un profil intermédiaire, proche de celui des marchés occidentaux, bien que les volumes de ventes soient globalement plus faibles.
-
-Ainsi, cette analyse confirme que le succès d’un jeu ne dépend pas uniquement de sa performance globale. Il est fortement influencé par des **facteurs culturels et régionaux**, qui façonnent les préférences des joueurs et expliquent les écarts observés entre les différentes zones géographiques.
+Pour notre jeu, l'enseignement est qu'un succès mondial ne se décrète pas par la seule qualité : il se heurte à des attentes culturelles ancrées. Conquérir l'Occident reste accessible à un titre international bien positionné, alors que le marché japonais, structuré autour de franchises locales établies, est quasi imprenable pour un nouveau venu. Cela renforce le choix de concentrer nos ambitions sur les marchés occidentaux, qui sont à la fois les plus accessibles commercialement et le cœur de la communauté speedrun.
 
 \newpage
 
@@ -873,16 +930,150 @@ ggplot(top_plateformes, aes(x = nb_runs, y = reorder(platformName, nb_runs))) +
 Comme attendu, le PC domine largement devant toutes les autres plateformes. C'est en effet une plateforme qui permet facilement d'enregistrer et de soumettre des runs sur speedrun.com (ce qui peut d'ailleurs constituer un biais en faveur des jeux PC dans notre dataset).
 Quoi qu'il en soit, notre jeu devra être disponible sur PC pour maximiser ses chances d'être speedrunné.
 
+\newpage
+
+## 12. Combien de temps dure le speedrun d'un jeu complet ?
+
+Après avoir identifié les genres et plateformes propices au speedrun, nous nous intéressons à un paramètre de conception central : la durée d'une run. Cette information est directement actionnable pour notre jeu, car la longueur d'une partie conditionne sa rejouabilité
+
+Nous imaginons que la majorité des runs se concentrent sur une durée modérée, de l'ordre de quelques dizaines de minutes, plutôt que sur des parties très longues qui limiteraient le nombre de tentatives.
+```{r echo=FALSE}
+speedrun_temps <- speedrun %>%
+  filter(
+    realTime > 0,
+    !is.na(realTime),
+    scopeType == "full-game"
+  )
+
+mediane_temps <- median(speedrun_temps$realTime)   # en secondes
+moyenne_temps <- mean(speedrun_temps$realTime)
+
+ggplot(speedrun_temps, aes(x = realTime)) +
+  geom_histogram(bins = 50, fill = "#2c7fb8", colour = "white") +
+  scale_x_log10(
+    breaks = c(30, 60, 300, 1800, 3600, 7200, 18000, 36000),
+    labels = c("30 s", "1 min", "10 min", "30 min",
+               "1 h", "2 h", "5 h", "10 h")
+  ) +
+  geom_vline(xintercept = mediane_temps, linetype = "dashed", colour = "red") +
+  annotate(
+    "text", x = mediane_temps, y = Inf,
+    label = paste0("Médiane : ", round(mediane_temps / 60), " min"),
+    hjust = -0.05, vjust = 2, colour = "red"
+  ) +
+  labs(
+    title = "Distribution de la durée des runs (échelle logarithmique)",
+    x        = "Durée du run (échelle log10)",
+    y        = "Nombre de runs"
+  ) +
+  theme_minimal()
+```
+
+L'essentiel des runs est compris entre 10 minutes et 2 heures. Les runs de quelques secondes ou de plus de 10 heures restent marginaux.
+
+Cette durée nous donne une cible concrète pour notre jeu : un format permettant une run d'environ une demi-heure à une heure semble être le standard, suffisamment long pour offrir un défi d'optimisation mais assez court pour rester répétable.
+
+Il faut toutefois nuancer : le graphique agrège toutes les runs terminant le jeu, any% et 100% confondus, ainsi que des jeux de longueurs très différentes. Les 46 minutes ne décrivent donc pas un speedrun type mais la médiane d'un mélange hétérogène.
+
+\newpage
+
+## 13. Quels sont les 15 pays qui concentrent le plus de runs ?
+
+Après avoir caractérisé la durée des runs, nous cherchons à localiser où se trouve la communauté speedrun dans le monde : savoir d'où viennent les joueurs nous indique les zones géographiques où concentrer notre présense.
+
+Nous imaginons que les États-Unis et les pays occidentaux anglophones dominent largement, du fait de leurs grandes communautés de joueurs, d'un bon accès à internet et du fait que la plateforme speedrun.com soit anglophone.
+
+
+```{r echo=FALSE}
+speedrun %>% select(contains("lon"))
+speedrun %>% select(contains("lat"))
+runs_geo <- speedrun %>%
+  filter(!is.na(lon), !is.na(paysNom)) %>%
+  count(paysNom, region, lon, lat, name = "nb_runs")
+
+top_pays <- runs_geo %>% slice_max(nb_runs, n = 15)
+
+carte_monde <- ggplot() +
+  annotation_borders("world", fill = "grey95", colour = "grey85") +
+  geom_point(
+    data = runs_geo %>% arrange(desc(nb_runs)),
+    aes(x = lon, y = lat, size = nb_runs, colour = nb_runs),
+    alpha = 0.7
+  ) +
+  geom_text_repel(
+    data = top_pays,
+    aes(x = lon, y = lat, label = paysNom),
+    size          = 3,
+    arrow         = arrow(length = unit(0.012, "npc")),  # la flèche
+    segment.color = "grey40",
+    segment.size  = 0.3,
+    box.padding   = 0.7,
+    max.overlaps  = Inf
+  ) +
+  scale_colour_gradient(
+    low   = "#deebf7",
+    high  = "#08519c",
+    trans = "log10"
+  ) +
+  scale_size_continuous(range = c(0.5, 6), trans = "log10") +
+  coord_quickmap() +
+  labs(
+    title    = "Nombre de runs par pays (échelle log)",
+    x = NULL, y = NULL,
+    colour = "Nb de runs", size = "Nb de runs"
+  ) +
+  theme_void()
+
+carte_monde
+```
+
+La carte confirme l'hypothèse et dessine une géographie nette : les États-Unis dominent largement, suivis d'un bloc occidental dense (Royaume-Uni, France, Allemagne et le reste de l'Europe de l'Ouest), complété par le Brésil, le Canada, l'Australie et le Japon. L'activité speedrun se concentre donc en Amérique du Nord et en Europe de l'Ouest.
+
+Pour notre jeu, l'enseignement recoupe celui de l'étude des ventes : c'est sur ces mêmes marchés occidentaux qu'il faudra concentrer nos efforts de lancement et d'animation de communauté, avec un support en anglais comme priorité évidente. 
+
+Une réserve toutefois : la localisation est déclarative et optionnelle sur speedrun.com, la carte mesure les joueurs ayant renseigné leur profil plutôt que la réalité, ce qui sur-représente sans doute les communautés occidentales déjà bien intégrées à la plateforme.
+
+\newpage
+
+## 14. Quels régions/pays concentrent le plus grand nombre de runs ?
+
+La carte précédente montrait les pays un à un ; nous agrégeons ici par région pour dégager la structure d'ensemble et voir comment les runs se répartissent entre les grands blocs géographiques, puis à l'intérieur de chacun. Cela précise le marché à viser : non plus pays par pays, mais à l'échelle des continents.
+
+Nous imaginons que les Amériques et l'Europe concentrent la grande majorité des runs, dans la continuité de ce qu'a révélé la carte.
+
+```{r}
+runs_tm <- speedrun %>%
+  filter(!is.na(region), !is.na(paysNom)) %>%
+  count(region, paysNom, name = "nb_runs")
+
+ggplot(runs_tm, aes(area = nb_runs, fill = region,
+                    subgroup = region, label = paysNom)) +
+  geom_treemap(colour = "black", size = 0.5) +
+  geom_treemap_subgroup_border(colour = "white", size = 3) +
+  geom_treemap_subgroup_text(place = "centre", grow = TRUE,
+                             alpha = 0.25, colour = "black") +
+  geom_treemap_text(colour = "white", place = "topleft", reflow = TRUE) +
+  scale_fill_manual(values = palette_regions) +
+  labs(title = "Répartition des runs par région et par pays") +
+  theme_minimal() +
+  theme(legend.position = "none")
+```
+
+Le treemap confirme la domination de deux blocs comparables, les Amériques et l'Europe, le reste restant marginal. Il révèle surtout un contraste de structure : les Amériques reposent presque entièrement sur les États-Unis, tandis que l'Europe répartit son poids entre de nombreux pays sans leader unique. Pour notre jeu, viser l'Amérique revient à toucher une audience massive et homogène anglophone, là où l'Europe constitue un marché fragmenté et multilingue.
+
+\newpage
+
 ## Conclusion
 
 À travers nos analyses, nous avons dégagé plusieurs caractéristiques que devrait réunir notre jeu pour maximiser ses chances d'être speedrunné :
 
-- **Une large audience** : la popularité est un facteur déterminant, même si elle ne suffit pas à elle seule ;
-- **Des mécaniques favorisant la rejouabilité** : genres platformer ou course, avec des runs courtes et optimisables ;
-- **Un univers contemporain** : un style proche des jeux des années 2010, pensé pour le streaming et le partage sur les réseaux sociaux ;
-- **Une sortie sur PC** : pour faciliter l'enregistrement et la publication de runs sur Speedrun.com.
+- Une large audience : la popularité est un facteur déterminant, même si elle ne suffit pas à elle seule ;
+- Des mécaniques favorisant la rejouabilité : genres platformer ou course, avec des runs courtes et optimisables ;
+- Une durée maîtrisée : un format permettant des runs d'environ une demi-heure à une heure, assez longues pour offrir un défi d'optimisation mais assez courtes pour rester répétables ;
+- Un univers contemporain : un style proche des jeux des années 2010, pensé pour le streaming et le partage sur les réseaux sociaux ;
+- Une sortie sur PC : pour faciliter l'enregistrement et la publication de runs sur Speedrun.com.
 
-Il convient toutefois de garder à l'esprit certaines limites de notre analyse. D'une part, les données de plateforme et de genre comportaient chacune environ 65 % de valeurs manquantes (NA) ; nous avons fait l'hypothèse que les 35 % restants étaient représentatifs de l'ensemble, mais cette approximation reste à considérer avec prudence. D'autre part, le dataset Speedrun.com sur-représente probablement les jeux PC du fait de la facilité de soumission, et la corrélation observée entre popularité et nombre de runs ne garantit pas qu'un jeu conçu spécifiquement pour le speedrun rencontrera le succès commercial.
+L'étude de la localisation des joueurs précise par ailleurs le marché à viser : la communauté speedrun est très concentrée en Amérique du Nord et en Europe de l'Ouest, avec une nette domination anglophone. Le marché américain offre une audience massive et homogène, tandis que l'Europe constitue un marché fragmenté et multilingue ; un support en anglais s'impose dans tous les cas comme priorité.
 
 \newpage
 
@@ -950,7 +1141,7 @@ merged_games <- sales_games %>%
 ```
 
 
-## 12. Existe-t-il un lien entre succès commercial en Europe et activité speedrun ?
+## 15. Existe-t-il un lien entre succès commercial en Europe et activité speedrun ?
 
 Nous cherchons ici à savoir si les jeux les plus vendus en Europe sont aussi ceux qui génèrent le plus d’activité speedrun.
 
@@ -959,7 +1150,6 @@ Nous cherchons ici à savoir si les jeux les plus vendus en Europe sont aussi ce
 Pour répondre à cette question, nous comparons les ventes européennes (`EU_Sales`) et le nombre de runs speedrun (`nb_runs`) à l’aide d’un nuage de points en échelle logarithmique.
 
 ```{r, fig.width=10, fig.height=6, warning=FALSE, message=FALSE}
-# Préparation des données
 quadrant_data <- merged_games %>%
   filter(
     EU_Sales > 0,
@@ -970,57 +1160,58 @@ quadrant_data <- merged_games %>%
     median_runs = median(nb_runs, na.rm = TRUE),
 
     quadrant = case_when(
-      EU_Sales >= median_sales & nb_runs >= median_runs ~ "Succès commercial + speedrun",
+      EU_Sales >= median_sales & nb_runs >= median_runs ~ "Très vendus et très speedrunnés",
       EU_Sales >= median_sales & nb_runs < median_runs ~ "Très vendus mais peu speedrunnés",
       EU_Sales < median_sales & nb_runs >= median_runs ~ "Peu vendus mais très speedrunnés",
-      TRUE ~ "Faibles ventes + faible speedrun"
+      TRUE ~ "Faibles ventes + faible activité"
     )
   )
 
-# Jeux à afficher en label
 label_games <- quadrant_data %>%
-  filter(quadrant != "Faibles ventes + faible speedrun") %>%
+  filter(quadrant != "Faibles ventes + faible activité") %>%
   arrange(desc(EU_Sales + nb_runs / 100)) %>%
   slice_head(n = 18)
 
 ggplot(quadrant_data,
-       aes(x = EU_Sales,
-           y = nb_runs,
-           color = quadrant)) +
-
+       aes(x = EU_Sales, y = nb_runs, color = quadrant)) +
+  
   geom_point(alpha = 0.45, size = 2) +
-
+  
   geom_vline(
     xintercept = median(quadrant_data$EU_Sales, na.rm = TRUE),
     linetype = "dashed",
-    color = "gray40"
+    color = "gray40",
+    linewidth = 0.8
   ) +
-
+  
   geom_hline(
     yintercept = median(quadrant_data$nb_runs, na.rm = TRUE),
     linetype = "dashed",
-    color = "gray40"
+    color = "gray40",
+    linewidth = 0.8
   ) +
-
+  
   geom_text_repel(
     data = label_games,
     aes(label = Name),
     size = 3.2,
-    max.overlaps = 25
+    max.overlaps = 25,
+    show.legend = FALSE
   ) +
-
+  
   scale_x_log10() +
   scale_y_log10() +
-
+  
   labs(
     title = "Lien entre ventes européennes et activité speedrun",
+    subtitle = "Quadrants définis par les médianes des ventes et des speedruns",
     x = "Ventes européennes (millions, échelle logarithmique)",
     y = "Nombre de runs speedrun (échelle logarithmique)",
     color = "Profil du jeu"
   ) +
-
+  
   theme_minimal() +
-
+  
   theme(
     legend.position = "bottom"
   )
@@ -1031,7 +1222,7 @@ Le graphique met en évidence une tendance positive globale : les jeux les plus 
 En effet, certains jeux très populaires commercialement possèdent une activité speedrun limitée, tandis que d’autres jeux aux ventes plus modestes développent des communautés particulièrement actives. Ces résultats suggèrent que le succès commercial favorise la visibilité d’un jeu, mais qu’il ne suffit pas à expliquer l’intérêt des speedrunners.
 
 \newpage
-## 13. Quels jeux possèdent le meilleur ratio “runs / ventes” ? 
+## 16. Quels jeux possèdent le meilleur ratio “runs / ventes” ? 
 
 Après avoir étudié le lien entre succès commercial et activité speedrun, nous cherchons désormais à identifier les jeux qui génèrent une activité speedrun particulièrement importante malgré des ventes plus limitées.
 
@@ -1056,16 +1247,26 @@ top_ratio <- merged_games %>%
 ggplot(top_ratio,
        aes(x = reorder(Name, ratio_runs_ventes),
            y = ratio_runs_ventes)) +
+  
   geom_col(fill = "#4C78A8") +
+  
+  geom_text(
+    aes(label = round(ratio_runs_ventes, 1)),
+    hjust = -0.1,
+    size = 3.5
+  ) +
+  
   coord_flip() +
+  
   labs(
     title = "Jeux avec le meilleur ratio runs / ventes européennes",
-    subtitle = "Jeux ayant au moins 0,5 million de ventes européennes et 20 runs",
     x = "Jeu",
     y = "Runs par million de ventes européennes"
   ) +
+  
+  expand_limits(y = max(top_ratio$ratio_runs_ventes) * 1.1) +
+  
   theme_minimal()
-
 ```
 Le graphique met en évidence plusieurs jeux possédant une activité speedrun très importante par rapport à leurs ventes européennes. *Payday 2* se démarque nettement, suivi par des jeux comme *Wave Race 64*, *Diddy Kong Racing* ou encore *Sonic Adventure 2 Battle*.
 
@@ -1074,6 +1275,7 @@ On observe également que plusieurs jeux présents dans ce classement partagent 
 Ces résultats suggèrent que le succès d’un jeu auprès des speedrunners ne dépend pas uniquement de son succès commercial. Même si la popularité d’un jeu semble favoriser l’émergence d’une communauté active, le gameplay et les possibilités offertes aux joueurs semblent également jouer un rôle important dans l’intérêt porté au speedrun.
 
 
+<<<<<<< HEAD
 \newpage
 ## Est ce que genre les plus vendues sotn celles qu'on speedrun le plus? 
 
@@ -1249,17 +1451,201 @@ Cependant, Nintendo occupe une place particulière dans la communauté speedrun.
 
 Ces résultats montrent donc que le succès commercial favorise l’activité speedrun, mais que certaines plateformes développent également une forte identité “speedrun-compatible” grâce à leur catalogue de jeux et à leur culture communautaire.
 
+=======
+>>>>>>> 37d840435149025fde032e9bf0a4b74c29e1fa4f
 \newpage
-## 14. Quels jeux ont la plus forte communauté speedrun par rapport à leur nombre de joueurs ?
+## 17. Est ce que genre les plus vendues sotn celles qu'on speedrun le plus? 
+
+<<<<<<< HEAD
+Après avoir identifié certains jeux particulièrement populaires auprès des speedrunners malgré des ventes plus modestes, nous cherchons maintenant à mesurer l’investissement réel des différentes communautés speedrun.
+
+> Les communautés les plus investies devraient présenter un nombre moyen de runs par joueur particulièrement élevé.
+
+=======
+Comme dans les parties précedantes nous cherchons maintenant à savoir si les genres les plus populaires commercialement sont également ceux qui génèrent le plus d’activité speedrun.
+
+> Les genres les plus vendus devraient globalement être les plus speedrunnés grâce à leur large base de joueurs et à leur popularité.
+
+Pour répondre à cette question, nous comparons les ventes mondiales totales de chaque genre au nombre total de runs speedrun associés. Nous utilisons un nuage de points (*scatter plot*) afin d’étudier la relation entre ces deux variables.
+
+
+```{r, fig.width=10, fig.height=6, warning=FALSE, message=FALSE}
+# Total des ventes et runs par genre
+sales_by_genre <- merged_games %>%
+  group_by(Genre) %>%
+  summarise(
+    total_sales = sum(Global_Sales, na.rm = TRUE),
+    total_runs = sum(nb_runs, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+# Scatter plot
+ggplot(sales_by_genre,
+       aes(x = total_sales,
+           y = total_runs,
+           label = Genre)) +
+
+  # Points
+  geom_point(
+    aes(color = "Genres"),
+    size = 4,
+    alpha = 0.8
+  ) +
+
+  # Droite de tendance
+  geom_smooth(
+    aes(linetype = "Tendance générale"),
+    method = "lm",
+    se = FALSE,
+    color = "darkred",
+    linewidth = 1.2
+  ) +
+
+  # Labels
+  geom_text_repel(
+    size = 4,
+    max.overlaps = 20
+  ) +
+
+  # Couleurs légende
+  scale_color_manual(
+    name = "",
+    values = c(
+      "Genres" = "steelblue"
+    )
+  ) +
+
+  # Ligne légende
+  scale_linetype_manual(
+    name = "",
+    values = c(
+      "Tendance générale" = "solid"
+    )
+  ) +
+
+  labs(
+    title = "Comparaison des ventes mondiales et du nombre total de runs speedrun",
+    x = "Ventes européennes totales (millions)",
+    y = "Nombre total de runs speedrun"
+  ) +
+
+  theme_minimal() +
+
+  theme(
+    legend.position = "bottom"
+  )
+```
+Le graphique met en évidence une corrélation positive globale : les genres les plus vendus, comme l’Action ou le Shooter, génèrent également beaucoup d’activité speedrun. Cependant, certains genres s’écartent de cette tendance. Les jeux de plateforme, par exemple, semblent particulièrement surreprésentés dans le speedrun grâce à leurs mécaniques optimisables et leur forte rejouabilité.
+
+Ces résultats suggèrent donc que la popularité d’un genre favorise l’activité speedrun, mais que certaines caractéristiques de gameplay jouent également un rôle important.
+
+\newpage
+## 18. Est ce que genre les plateformes vendues sotn celles qu'on speedrun le plus?
+
+Après avoir étudié les genres, nous cherchons maintenant à savoir si les plateformes les plus populaires commercialement sont également celles qui génèrent le plus d’activité speedrun.
+
+> Les plateformes les plus vendues devraient globalement être aussi les plus speedrunnées. Nous nous attendons toutefois à une domination plus marquée des plateformes Nintendo, historiquement très présentes dans la communauté speedrun.
+
+Pour répondre à cette question, nous comparons les ventes européennes totales de chaque plateforme au nombre total de runs speedrun associés. Nous utilisons un nuage de points (*scatter plot*) afin d’étudier la relation entre ces deux variables.
+
+
+```{r, fig.width=9, fig.height=7, warning=FALSE, message=FALSE}
+# Ventes et runs par plateforme
+sales_by_platform <- merged_games %>%
+  group_by(Platform) %>%
+  summarise(
+    total_sales = sum(EU_Sales, na.rm = TRUE),
+    total_runs = sum(nb_runs, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  
+  # Attribution du constructeur
+  mutate(
+    Constructeur = case_when(
+      Platform %in% c("PS2", "PS3", "PS", "PS4", "PSP", "PSV") ~ "Sony",
+      Platform %in% c("Wii", "DS", "GBA", "3DS", "GB", "NES", "N64", "SNES", "GC", "WiiU") ~ "Nintendo",
+      Platform %in% c("X360", "XB", "XOne") ~ "Microsoft",
+      Platform %in% c("SAT", "GEN", "DC", "SCD") ~ "Sega",
+      Platform == "PC" ~ "PC",
+      Platform == "2600" ~ "Atari",
+      TRUE ~ "Autre"
+    )
+  )
+
+# Scatter plot
+ggplot(sales_by_platform,
+       aes(x = total_sales,
+           y = total_runs,
+           label = Platform,
+           color = Constructeur)) +
+
+  # Points
+  geom_point(
+    size = 4,
+    alpha = 0.85
+  ) +
+
+  # Droite de tendance
+  geom_smooth(
+    aes(linetype = "Tendance générale"),
+    method = "lm",
+    se = FALSE,
+    color = "darkred",
+    linewidth = 1.2
+  ) +
+
+  # Labels
+  geom_text_repel(
+    size = 4,
+    max.overlaps = 25
+  ) +
+
+  # Couleurs personnalisées
+scale_color_manual(
+  values = palette_plateformes
+) +
+
+# Ligne de tendance
+scale_linetype_manual(
+  name = "",
+  values = c(
+    "Tendance générale" = "solid"
+  )
+) +
+
+  labs(
+    title = "Les plateformes les plus vendues sont-elles les plus speedrunnées ?",
+    x = "Ventes européennes totales (millions)",
+    y = "Nombre total de runs speedrun",
+    color = "Constructeur"
+  ) +
+
+  theme_minimal() +
+
+  theme(
+    legend.position = "bottom",
+    
+  )
+
+```
+Le graphique confirme globalement notre hypothèse : les plateformes les plus vendues génèrent généralement davantage d’activité speedrun. Les consoles Sony dominent fortement en volume grâce au succès de la PS2, de la PS1 ou encore de la PS4.
+
+Cependant, Nintendo occupe une place particulière dans la communauté speedrun. Des consoles comme la N64, la GameCube ou la SNES possèdent une activité speedrun extrêmement élevée par rapport à leurs ventes européennes. Cette surreprésentation semble liée aux nombreuses licences emblématiques de Nintendo (*Mario, Zelda, Metroid…*), historiquement très populaires dans le speedrun.
+
+Ces résultats montrent donc que le succès commercial favorise l’activité speedrun, mais que certaines plateformes développent également une forte identité “speedrun-compatible” grâce à leur catalogue de jeux et à leur culture communautaire.
+
+\newpage
+## 19. Quels jeux ont la plus forte communauté speedrun par rapport à leur nombre de joueurs ?
 
 Après avoir identifié certains jeux particulièrement populaires auprès des speedrunners malgré des ventes plus modestes, nous cherchons maintenant à mesurer l’investissement réel des différentes communautés speedrun.
 
 > Les communautés les plus investies devraient présenter un nombre moyen de runs par joueur particulièrement élevé.
 
+>>>>>>> 37d840435149025fde032e9bf0a4b74c29e1fa4f
 Pour répondre à cette question, nous calculons le ratio suivant :
 
 \[
-\text{Runs par joueur} = \frac{\text{Nombre total de runs}}{\text{Nombre de joueurs}}
+\text{Runs par joueur} = \frac{\text{Nombre total de runs}}{\text{Nombre de speedruners}}
 \]
 
 ```{r, fig.width=10, fig.height=6, warning=FALSE, message=FALSE}
@@ -1324,7 +1710,7 @@ Ces résultats montrent que la taille d’une communauté ne suffit pas à mesur
 
 
 \newpage
-## 15. Les jeux les mieux notés attirent-ils davantage les speedrunners ?
+## 20. Les jeux les mieux notés attirent-ils davantage les speedrunners ?
 
 Après avoir étudié les genres les plus populaires auprès des speedrunners, nous cherchons maintenant à savoir si les jeux les mieux notés attirent également davantage d’activité speedrun.
 
@@ -1411,7 +1797,7 @@ Ces résultats suggèrent que la qualité critique joue un rôle, mais qu’elle
 
 
 \newpage
-## 16. Existe-t-il une “recette parfaite” du jeu speedrunnable ?
+## 21. Existe-t-il une “recette parfaite” du jeu speedrunnable ?
 
 Après avoir étudié séparément les ventes, les notes critiques, les genres ou encore l’investissement des communautés, nous cherchons désormais à identifier le profil moyen des jeux les plus populaires auprès des speedrunners.
 
@@ -1428,7 +1814,7 @@ Pour répondre à cette question, nous comparons le profil moyen des jeux appart
 - le nombre de plateformes ;
 - les ventes globales
 
-```{r, fig.width=9, fig.height=7, warning=FALSE, message=FALSE}
+```{r, fig.width=10, fig.height=6, warning=FALSE, message=FALSE}
 radar_data <- merged_games %>%
   mutate(
     groupe = ifelse(
