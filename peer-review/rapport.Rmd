@@ -285,13 +285,10 @@ library(sf)
 library(patchwork)
 library(tidytext)
 library(treemapify)
-<<<<<<< HEAD
 library(maps)
-=======
 library(ggrepel)
 library(tidyverse)
->>>>>>> 01e9b113423d9d050f511224ffac4581f4ce17de
-
+library(rnaturalearthdata)
 
 videoGameSales <- read_csv("../data/Video_Games_Sales_as_at_22_Dec_2016.csv")
 speedrun1 <- read_csv("../data/speedrun/leaderboards-data_part001.csv")
@@ -988,11 +985,7 @@ Après avoir caractérisé la durée des runs, nous cherchons à localiser où s
 Nous imaginons que les États-Unis et les pays occidentaux anglophones dominent largement, du fait de leurs grandes communautés de joueurs, d'un bon accès à internet et du fait que la plateforme speedrun.com soit anglophone.
 
 
-<<<<<<< HEAD
-```{r echo=FALSE}
-speedrun %>% select(contains("lon"))
-speedrun %>% select(contains("lat"))
-=======
+
 ```{r carte-runs, fig.width=9, fig.height=11, out.width="65%", fig.align="center"}
 
 monde <- ne_countries(scale = "medium", returnclass = "sf")
@@ -1005,7 +998,6 @@ runs_pays <- speedrun %>%
 monde_runs <- monde %>%
   left_join(runs_pays, by = c("iso_a2_eh" = "countryCode"))
 
->>>>>>> 01e9b113423d9d050f511224ffac4581f4ce17de
 runs_geo <- speedrun %>%
   filter(!is.na(lon), !is.na(paysNom)) %>%
   count(paysNom, region, lon, lat, name = "nb_runs")
@@ -1184,10 +1176,6 @@ Nous cherchons ici à savoir si les jeux les plus vendus en Europe sont aussi ce
 Pour répondre à cette question, nous comparons les ventes européennes (`EU_Sales`) et le nombre de runs speedrun (`nb_runs`) à l’aide d’un nuage de points en échelle logarithmique.
 
 ```{r, fig.width=10, fig.height=6, warning=FALSE, message=FALSE}
-<<<<<<< HEAD
-=======
-
->>>>>>> 01e9b113423d9d050f511224ffac4581f4ce17de
 quadrant_data <- merged_games %>%
   filter(
     EU_Sales > 0,
@@ -1205,10 +1193,6 @@ quadrant_data <- merged_games %>%
     )
   )
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 01e9b113423d9d050f511224ffac4581f4ce17de
 label_games <- quadrant_data %>%
   filter(quadrant != "Faibles ventes + faible activité") %>%
   arrange(desc(EU_Sales + nb_runs / 100)) %>%
@@ -1317,7 +1301,6 @@ On observe également que plusieurs jeux présents dans ce classement partagent 
 Ces résultats suggèrent que le succès d’un jeu auprès des speedrunners ne dépend pas uniquement de son succès commercial. Même si la popularité d’un jeu semble favoriser l’émergence d’une communauté active, le gameplay et les possibilités offertes aux joueurs semblent également jouer un rôle important dans l’intérêt porté au speedrun.
 
 
-<<<<<<< HEAD
 \newpage
 ## Est ce que genre les plus vendues sotn celles qu'on speedrun le plus? 
 
@@ -1493,17 +1476,15 @@ Cependant, Nintendo occupe une place particulière dans la communauté speedrun.
 
 Ces résultats montrent donc que le succès commercial favorise l’activité speedrun, mais que certaines plateformes développent également une forte identité “speedrun-compatible” grâce à leur catalogue de jeux et à leur culture communautaire.
 
-=======
->>>>>>> 37d840435149025fde032e9bf0a4b74c29e1fa4f
 \newpage
 ## 17. Est ce que genre les plus vendues sotn celles qu'on speedrun le plus? 
 
-<<<<<<< HEAD
+
 Après avoir identifié certains jeux particulièrement populaires auprès des speedrunners malgré des ventes plus modestes, nous cherchons maintenant à mesurer l’investissement réel des différentes communautés speedrun.
 
 > Les communautés les plus investies devraient présenter un nombre moyen de runs par joueur particulièrement élevé.
 
-=======
+
 Comme dans les parties précedantes nous cherchons maintenant à savoir si les genres les plus populaires commercialement sont également ceux qui génèrent le plus d’activité speedrun.
 
 > Les genres les plus vendus devraient globalement être les plus speedrunnés grâce à leur large base de joueurs et à leur popularité.
@@ -1684,9 +1665,6 @@ Pour répondre à cette question, nous calculons le ratio suivant :
 \]
 
 ```{r, fig.width=10, fig.height=6, warning=FALSE, message=FALSE}
-
-
-
 community_density <- merged_games %>%
   filter(
     nb_players > 0,
@@ -1846,13 +1824,11 @@ Pour répondre à cette question, nous comparons le profil moyen des jeux appart
 - le nombre de joueurs speedrun ;
 - le nombre de catégories speedrun ;
 - le nombre de plateformes ;
-- les ventes globales
+- les ventes globales 
 
-<<<<<<< HEAD
-```{r, fig.width=10, fig.height=6, warning=FALSE, message=FALSE}
-=======
+
 ```{r,fig.width=9, fig.height=11, out.width="45%", fig.align="center"}
->>>>>>> 01e9b113423d9d050f511224ffac4581f4ce17de
+
 radar_data <- merged_games %>%
   mutate(
     groupe = ifelse(
