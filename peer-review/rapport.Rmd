@@ -104,7 +104,7 @@ Ce dataset recense les jeux référencés sur [**Speedrun.com**](https://www.spe
 Le dataset est composé de **4 fichiers CSV** reliés entre eux par des identifiants communs :
 
 | Fichier | Dimensions | Unité d'observation | Description |
-|----------------|----------------|----------------|------------------------|
+|-----------------|-----------------|-----------------|----------------------|
 | *games-data.csv* | (43 663 × 6) | Jeu | Métadonnées de chaque jeu référencé sur Speedrun.com |
 | *leaderboards-data.csv* | (2 232 884 × 3) | Run classée | Runs validées et classées sur les leaderboards |
 | *platforms-data.csv* | (213 × 3) | Plateforme | Table de référence des plateformes (consoles, PC, supports mobiles) |
@@ -143,7 +143,7 @@ Fichier central du dataset. Chaque ligne correspond à un jeu unique référenc�
 Contient toutes les runs **validées** et classées sur les leaderboards Speedrun.com. C'est le fichier de référence pour mesurer l'activité communautaire autour de chaque jeu.
 
 | Colonne | Nature | Type | \% NA | Uniques | Exemples |
-|------------|-------------|------------|------------|------------|------------|
+|------------|------------|------------|------------|------------|------------|
 | runId | qualitative nominale (identifiant unique) | string | 0.00% | 2 232 884 | zpg4gdnz |
 | gameId | qualitative nominale (identifiant vers games-data) | string | 0.00% | 42 278 | j1n8nj91 |
 | players | qualitative nominale (liste d'identifiants de joueurs) | string | 3.90% | 480 808 | 8d4kdg58 |
@@ -680,13 +680,11 @@ On observe également que plusieurs de ces jeux sont associés à des **consoles
 
 Ainsi, le succès global d’un jeu apparaît comme le résultat d’une combinaison de facteurs : popularité du genre, diffusion de la plateforme et portée internationale de la licence.
 
-
 \newpage
 
-## Les jeux présents sur davantage de plateformes rencontrent-ils un plus grand succès commercial ?
+## 6. Les jeux présents sur davantage de plateformes rencontrent-ils un plus grand succès commercial ?
 
 Après avoir identifié les jeux les plus vendus, nous pouvons nous intéresser désormais à une stratégie de distribution potentielle pour notre futur jeu. Faut-il concentrer nos efforts sur une seule plateforme ou viser une sortie multiplateforme ? Nous faisons l'hypothèse qu'une présence sur un plus grand nombre de plateformes permet d'accroître les ventes grâce à une audience potentielle plus large.
-
 
 ```{r}
 
@@ -744,12 +742,12 @@ ggplot(
   theme_minimal()
 
 ```
-On observe une légère tendance positive entre le nombre de plateformes et les ventes mondiales. Les jeux disponibles sur plusieurs plateformes tendent donc à réaliser davantage de ventes, mais cette relation reste relativement faible. Le nombre de plateformes constitue ainsi un levier intéressant pour augmenter la visibilité d'un jeu, sans pour autant garantir son succès commercial.
 
+On observe une légère tendance positive entre le nombre de plateformes et les ventes mondiales. Les jeux disponibles sur plusieurs plateformes tendent donc à réaliser davantage de ventes, mais cette relation reste relativement faible. Le nombre de plateformes constitue ainsi un levier intéressant pour augmenter la visibilité d'un jeu, sans pour autant garantir son succès commercial.
 
 \newpage
 
-## 6. Observe-t-on des différences régionales dans les préférences de plateformes ou de genres ? {#q6-differences}
+## 7. Observe-t-on des différences régionales dans les préférences de plateformes ou de genres ? {#q6-differences}
 
 Pour orienter le genre de notre futur jeu, nous examinons si les préférences des joueurs varient selon les régions (Amérique du Nord, Europe, Japon, autres) : un genre porteur sur un marché ne l'est pas nécessairement ailleurs, ce qui pèse sur le positionnement à adopter. Nous formulons l'hypothèse suivante : le Japon privilégierait les jeux de rôle (RPG), tandis que l'Amérique du Nord et l'Europe seraient plus orientées vers l'action ou le sport. Pour la tester, nous comparons les ventes par genre selon les régions.
 
@@ -800,7 +798,7 @@ Cibler simultanément ces marchés suppose donc un genre suffisamment hybride, o
 
 \newpage
 
-## 7. Quelles sont les préférences régionales en termes de jeux ?
+## 8. Quelles sont les préférences régionales en termes de jeux ?
 
 Après les genres et les plateformes, nous descendons au niveau des jeux eux-mêmes pour affiner notre étude de marché : les titres les plus populaires mondialement dominent-ils partout, ou des préférences locales émergent-elles région par région ? La réponse nous dit dans quelle mesure un même jeu peut s'imposer sur tous nos marchés cibles. Pour cela, nous avons agrégé les ventes par jeu et par région, puis extrait le top 10 de chacune, présenté en facettes pour comparer les classements.
 
@@ -861,7 +859,7 @@ Pour notre jeu, l'enseignement est qu'un succès mondial ne se décrète pas par
 
 # Analyse de Speedrun.com
 
-## 8. Quels sont les jeu avec le plus de runs ?
+## 9. Quels sont les jeu avec le plus de runs ?
 
 Après avoir étudié en profondeur les ventes de jeux vidéo à l'échelle mondiale, nous allons nous intéresser au nombre de runs de speedrun que chacun des jeux possède sur le site speedrun.com.
 
@@ -894,7 +892,7 @@ ggplot(top_jeux, aes(x = nb_runs, y = reorder(gameName, nb_runs))) +
 
 \newpage
 
-## 9. Quels sont les genres de jeu avec le plus de runs ?
+## 10. Quels sont les genres de jeu avec le plus de runs ?
 
 Après avoir identifié les jeux les plus speedrunnés, nous souhaitons élargir l'analyse aux genres qui rassemblent le plus de runs sur speedrun.com.
 
@@ -927,7 +925,7 @@ ggplot(top_genres, aes(x = nb_runs, y = reorder(genreName, nb_runs))) +
 
 \newpage
 
-## 10. L'année de sortie est-elle corrélée au nombre de runs des jeux ?
+## 11. L'année de sortie est-elle corrélée au nombre de runs des jeux ?
 
 L'année de sortie pourrait avoir un impact sur le nombre de runs par jeu. Même si cette information ne nous indiquera pas directement quand sortir notre jeu, elle peut révéler quelles époques (et donc quels thèmes de jeu dominants) incitent le plus les joueurs à relancer une partie pour battre des records.
 
@@ -960,7 +958,7 @@ Notre jeu devra donc s'inscrire dans un univers récent et être facilement part
 
 \newpage
 
-## 11. Quelles sont les plateformes les plus speedrunnées ?
+## 12. Quelles sont les plateformes les plus speedrunnées ?
 
 La question est cruciale : il nous faut choisir la bonne plateforme pour sortir notre jeu, car un jeu lancé sur une plateforme peu active aura du mal à fédérer une communauté de speedrun. Nous imaginons que la plateforme la plus speedrunnée sera le PC, son caractère universel le rendant accessible au plus grand nombre.
 
@@ -989,7 +987,7 @@ Comme attendu, le PC domine largement devant toutes les autres plateformes. C'es
 
 \newpage
 
-## 12. Combien de temps dure le speedrun d'un jeu complet ?
+## 13. Combien de temps dure le speedrun d'un jeu complet ?
 
 Après avoir identifié les genres et plateformes propices au speedrun, nous nous intéressons à un paramètre de conception central : la durée d'une run. Cette information est directement actionnable pour notre jeu, car la longueur d'une partie conditionne sa rejouabilité
 
@@ -1035,7 +1033,7 @@ Il faut toutefois nuancer : le graphique agrège toutes les runs terminant le je
 
 \newpage
 
-## 13. Quels sont les 15 pays qui concentrent le plus de runs ?
+## 14. Quels sont les 15 pays qui concentrent le plus de runs ?
 
 Après avoir caractérisé la durée des runs, nous cherchons à localiser où se trouve la communauté speedrun dans le monde : savoir d'où viennent les joueurs nous indique les zones géographiques où concentrer notre présense.
 
@@ -1118,7 +1116,7 @@ Une réserve toutefois : la localisation est déclarative et optionnelle sur spe
 
 \newpage
 
-## 14. Quels régions/pays concentrent le plus grand nombre de runs ?
+## 15. Quels régions/pays concentrent le plus grand nombre de runs ?
 
 La carte précédente montrait les pays un à un ; nous agrégeons ici par région pour dégager la structure d'ensemble et voir comment les runs se répartissent entre les grands blocs géographiques, puis à l'intérieur de chacun. Cela précise le marché à viser : non plus pays par pays, mais à l'échelle des continents.
 
@@ -1221,7 +1219,7 @@ merged_games <- sales_games %>%
 
 ```
 
-## 15. Existe-t-il un lien entre succès commercial en Europe et activité speedrun ?
+## 16. Existe-t-il un lien entre succès commercial en Europe et activité speedrun ?
 
 Nous cherchons ici à savoir si les jeux les plus vendus en Europe sont aussi ceux qui génèrent le plus d’activité speedrun.
 
@@ -1303,7 +1301,7 @@ En effet, certains jeux très populaires commercialement possèdent une activit�
 
 \newpage
 
-## 16. Quels jeux possèdent le meilleur ratio “runs / ventes” ?
+## 17. Quels jeux possèdent le meilleur ratio “runs / ventes” ?
 
 Après avoir étudié le lien entre succès commercial et activité speedrun, nous cherchons désormais à identifier les jeux qui génèrent une activité speedrun particulièrement importante malgré des ventes plus limitées.
 
@@ -1358,7 +1356,7 @@ Ces résultats suggèrent que le succès d’un jeu auprès des speedrunners ne 
 
 \newpage
 
-## 17. Est ce que genre les plus vendues sotn celles qu'on speedrun le plus?
+## 18. Est ce que genre les plus vendues sotn celles qu'on speedrun le plus?
 
 Comme dans les parties précedantes nous cherchons maintenant à savoir si les genres les plus populaires commercialement sont également ceux qui génèrent le plus d’activité speedrun.
 
@@ -1439,7 +1437,7 @@ Ces résultats suggèrent donc que la popularité d’un genre favorise l’acti
 
 \newpage
 
-## 18. Est ce que genre les plateformes vendues sotn celles qu'on speedrun le plus?
+## 19. Est ce que genre les plateformes vendues sotn celles qu'on speedrun le plus?
 
 Après avoir étudié les genres, nous cherchons maintenant à savoir si les plateformes les plus populaires commercialement sont également celles qui génèrent le plus d’activité speedrun.
 
@@ -1535,7 +1533,7 @@ Ces résultats montrent donc que le succès commercial favorise l’activité sp
 
 \newpage
 
-## 19. Est ce que genre les plus vendues sotn celles qu'on speedrun le plus?
+## 20. Est ce que genre les plus vendues sotn celles qu'on speedrun le plus?
 
 Après avoir identifié certains jeux particulièrement populaires auprès des speedrunners malgré des ventes plus modestes, nous cherchons maintenant à mesurer l’investissement réel des différentes communautés speedrun.
 
@@ -1617,7 +1615,7 @@ Ces résultats suggèrent donc que la popularité d’un genre favorise l’acti
 
 \newpage
 
-## 20. Est ce que genre les plateformes vendues sotn celles qu'on speedrun le plus?
+## 21. Est ce que genre les plateformes vendues sotn celles qu'on speedrun le plus?
 
 Après avoir étudié les genres, nous cherchons maintenant à savoir si les plateformes les plus populaires commercialement sont également celles qui génèrent le plus d’activité speedrun.
 
@@ -1709,7 +1707,7 @@ Ces résultats montrent donc que le succès commercial favorise l’activité sp
 
 \newpage
 
-## 21. Quels jeux ont la plus forte communauté speedrun par rapport à leur nombre de joueurs ?
+## 22. Quels jeux ont la plus forte communauté speedrun par rapport à leur nombre de joueurs ?
 
 Après avoir identifié certains jeux particulièrement populaires auprès des speedrunners malgré des ventes plus modestes, nous cherchons maintenant à mesurer l’investissement réel des différentes communautés speedrun.
 
@@ -1778,7 +1776,7 @@ Ces résultats montrent que la taille d’une communauté ne suffit pas à mesur
 
 \newpage
 
-## 22. Les jeux les mieux notés attirent-ils davantage les speedrunners ?
+## 23. Les jeux les mieux notés attirent-ils davantage les speedrunners ?
 
 Après avoir étudié les genres les plus populaires auprès des speedrunners, nous cherchons maintenant à savoir si les jeux les mieux notés attirent également davantage d’activité speedrun.
 
@@ -1864,7 +1862,7 @@ Ces résultats suggèrent que la qualité critique joue un rôle, mais qu’elle
 
 \newpage
 
-## 23. Existe-t-il une “recette parfaite” du jeu speedrunnable ?
+## 24. Existe-t-il une “recette parfaite” du jeu speedrunnable ?
 
 Après avoir étudié séparément les ventes, les notes critiques, les genres ou encore l’investissement des communautés, nous cherchons désormais à identifier le profil moyen des jeux les plus populaires auprès des speedrunners.
 
