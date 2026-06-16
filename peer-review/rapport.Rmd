@@ -56,18 +56,18 @@ Cependant, le jeu de données présente de nombreuses valeurs manquantes, notamm
 |------------|------------|------------|------------|------------|------------|
 | Name | qualitative nominale (texte) | object | 0.02% | 11 563 | Wii Sports; Super Mario Bros. |
 | Platform | qualitative nominale (catégorie) | object | 0.00% | 31 | Wii; NES |
-| Year_of_Release | quantitative discrète (année) | float64 | 1.61% | — | 2006.0; 1985.0 |
+| Year_of_Release | quantitative discrète (année) | float64 | 1.61% | - | 2006.0; 1985.0 |
 | Genre | qualitative nominale (catégorie) | object | 0.02% | 12 | Sports; Platform |
 | Publisher | qualitative nominale (catégorie) | object | 0.32% | 582 | Nintendo |
-| NA_Sales | quantitative continue (millions) | float64 | 0.00% | — | 41.36; 29.08 |
-| EU_Sales | quantitative continue (millions) | float64 | 0.00% | — | 28.96; 3.58 |
-| JP_Sales | quantitative continue (millions) | float64 | 0.00% | — | 3.77; 6.81 |
-| Other_Sales | quantitative continue (millions) | float64 | 0.00% | — | 8.45; 0.77 |
-| Global_Sales | quantitative continue (millions) | float64 | 0.00% | — | 82.53; 40.24 |
-| Critic_Score | quantitative discrète (0–100) | float64 | 51.33% | — | 76.0; 82.0 |
-| Critic_Count | quantitative discrète (compte) | float64 | 51.33% | — | 51.0; 73.0 |
+| NA_Sales | quantitative continue (millions) | float64 | 0.00% | - | 41.36; 29.08 |
+| EU_Sales | quantitative continue (millions) | float64 | 0.00% | - | 28.96; 3.58 |
+| JP_Sales | quantitative continue (millions) | float64 | 0.00% | - | 3.77; 6.81 |
+| Other_Sales | quantitative continue (millions) | float64 | 0.00% | - | 8.45; 0.77 |
+| Global_Sales | quantitative continue (millions) | float64 | 0.00% | - | 82.53; 40.24 |
+| Critic_Score | quantitative discrète (0–100) | float64 | 51.33% | - | 76.0; 82.0 |
+| Critic_Count | quantitative discrète (compte) | float64 | 51.33% | - | 51.0; 73.0 |
 | User_Score | quantitative continue (0–10 + "tbd") | object | 40.10% | 96 | 8; 8.3; tbd |
-| User_Count | quantitative discrète (compte) | float64 | 54.60% | — | 322.0; 709.0 |
+| User_Count | quantitative discrète (compte) | float64 | 54.60% | - | 322.0; 709.0 |
 | Developer | qualitative nominale (catégorie) | object | 39.61% | 1 696 | Nintendo |
 | Rating | qualitative (catégorie ESRB) | object | 40.49% | 8 | E |
 
@@ -104,7 +104,7 @@ Ce dataset recense les jeux référencés sur [**Speedrun.com**](https://www.spe
 Le dataset est composé de **4 fichiers CSV** reliés entre eux par des identifiants communs :
 
 | Fichier | Dimensions | Unité d'observation | Description |
-|-----------------|-----------------|-----------------|----------------------|
+|-----------------|-----------------|-----------------|---------------------|
 | *games-data.csv* | (43 663 × 6) | Jeu | Métadonnées de chaque jeu référencé sur Speedrun.com |
 | *leaderboards-data.csv* | (2 232 884 × 3) | Run classée | Runs validées et classées sur les leaderboards |
 | *platforms-data.csv* | (213 × 3) | Plateforme | Table de référence des plateformes (consoles, PC, supports mobiles) |
@@ -220,7 +220,7 @@ Les sous-groupes exploitables sont :
 
 # Annexes
 
-## Annexe A — Correspondance des codes de plateformes
+### Annexe A - Correspondance des codes de plateformes
 
 Dans le dataset *Video Game Sales*, la variable `Platform` est codée sous forme d’abréviations. Afin de faciliter la lecture du rapport, le tableau ci-dessous présente la correspondance entre les codes utilisés et le nom complet des plateformes.
 
@@ -500,7 +500,7 @@ ggplot(ventes_par_plateforme,
   theme_minimal() 
 ```
 
-Le marché ne suit pas une logique équilibrée mais une logique de paliers dominée par deux acteurs historiques. Sony s'impose en volume, porté par le succès titanesque de la PS2 et par la présence de toute sa gamme de salon (PS1, PS3, PS4) en haut du classement. Nintendo se distingue lui par l'étendue de son catalogue de machines et une longévité remarquable, là où Sega n'a pas su durer dans le temps. Pour notre jeu, l'enseignement est direct : viser un support à très large parc installé, typiquement une console Sony ou Nintendo de sa génération, conditionne fortement l'audience commerciale atteignable — un lancement sur une plateforme marginale partirait avec un handicap structurel.
+Le marché ne suit pas une logique équilibrée mais une logique de paliers dominée par deux acteurs historiques. Sony s'impose en volume, porté par le succès titanesque de la PS2 et par la présence de toute sa gamme de salon (PS1, PS3, PS4) en haut du classement. Nintendo se distingue lui par l'étendue de son catalogue de machines et une longévité remarquable, là où Sega n'a pas su durer dans le temps. Pour notre jeu, l'enseignement est direct : viser un support à très large parc installé, typiquement une console Sony ou Nintendo de sa génération, conditionne fortement l'audience commerciale atteignable - un lancement sur une plateforme marginale partirait avec un handicap structurel.
 
 \newpage
 
@@ -616,7 +616,7 @@ Ces genres dominent clairement les ventes globales, ce qui confirme qu’ils son
 
 \newpage
 
-## 4. Quelle région (Amérique du Nord, Europe, Japon, autres régions) contribue le plus aux ventes de jeux vidéo ? {#q4-regions}
+## 4. Quelle région contribue le plus aux ventes de jeux vidéo ? {#q4-regions}
 
 Pour répondre à cette question, nous avons utilisé un diagramme en barres. Ce type de graphique est particulièrement adapté pour comparer des quantités entre plusieurs catégories distinctes, ici les différentes régions du monde : Amérique du Nord, Europe, Japon et autres régions.
 
@@ -650,7 +650,7 @@ L’**Amérique du Nord** domine largement les ventes de jeux vidéo, représent
 
 ## 5. Quels sont les jeux les plus vendus globalement ?
 
-Après avoir étudié la structure globale du marché du jeu vidéo — en identifiant les régions dominantes, les genres les plus populaires et les plateformes les plus performantes — il est pertinent de s’intéresser aux **jeux eux-mêmes**.
+Après avoir étudié la structure globale du marché du jeu vidéo - en identifiant les régions dominantes, les genres les plus populaires et les plateformes les plus performantes - il est pertinent de s’intéresser aux **jeux eux-mêmes**.
 
 En effet, ces analyses nous ont permis de comprendre *où* et *comment* se réalisent les ventes. Nous cherchons désormais à identifier **quels jeux concentrent réellement ce succès** à l’échelle mondiale.
 
@@ -1993,6 +1993,8 @@ Les écarts les plus marqués concernent principalement le nombre de catégories
 
 Ces résultats montrent qu’il n’existe probablement pas une caractéristique unique expliquant le succès d’un jeu auprès des speedrunners. Le développement d’une communauté active semble plutôt reposer sur une combinaison de plusieurs éléments : un gameplay rejouable, des possibilités d’optimisation variées et une expérience suffisamment riche pour encourager l’investissement des joueurs sur le long terme.
 
+\newpage
+
 ## Conclusion
 
 Nos analyses montrent que le succès commercial ou les bonnes notes critiques jouent un rôle, mais ne suffisent pas à expliquer l’engagement des speedrunners. Certains blockbusters très populaires génèrent finalement peu d’activité, tandis que des jeux plus confidentiels développent des communautés extrêmement actives et investies.
@@ -2000,3 +2002,31 @@ Nos analyses montrent que le succès commercial ou les bonnes notes critiques jo
 Les résultats mettent surtout en évidence plusieurs caractéristiques communes aux jeux les plus speedrunnés : - un gameplay dynamique et technique ; - une forte rejouabilité ; - des mécaniques permettant l’optimisation et la créativité ; - plusieurs catégories ou stratégies de speedrun ; - une communauté engagée sur le long terme.
 
 Concevoir un jeu adapté au speedrun ne consiste pas uniquement à produire un jeu populaire, mais surtout un jeu profond, flexible et agréable à maîtriser. Le speedrun apparaît donc avant tout comme une question de game design et d’expérience de jeu, bien plus que de succès commercial pur.
+
+\newpage
+
+# Conclusion générale
+
+Au terme de cette enquête, nos trois axes d'analyse convergent vers un même objectif : définir le profil du jeu idéal, à la fois rentable commercialement et capable de fédérer une communauté de speedrun.
+
+L'**analyse des ventes** a dessiné le marché : il est dominé par quelques plateformes à très large parc installé (Sony, Nintendo), porté par les genres Action, Sports et Shooter, et structuré en deux mondes - un Occident homogène (Amérique du Nord et Europe) friand d'action et de compétition, face à un Japon refermé sur ses RPG et ses franchises locales, quasi imprenable pour un nouveau venu.
+
+L'**analyse de Speedrun.com** a révélé une autre logique : le platformer et la course règnent sur les leaderboards, le PC concentre l'essentiel des runs, la durée idéale se situe entre une demi-heure et une heure, et la communauté se concentre en Amérique du Nord et en Europe de l'Ouest anglophones, avec un net essor lié au streaming à partir de 2014.
+
+Le **couplage des deux sources** a enfin montré que succès commercial et activité speedrun sont liés, mais faiblement : vendre beaucoup aide à la visibilité sans suffire. Ce qui distingue réellement les jeux les plus speedrunnés tient au game design - profondeur technique, rejouabilité, multiplicité des catégories d'optimisation et communauté engagée sur la durée.
+
+De cette synthèse, nous tirons la carte d'identité du jeu à concevoir :
+
+| Critère | Choix retenu |
+|------------------------------------|------------------------------------|
+| **Genre** | Platformer nerveux à dimension course/action : assez grand public pour vendre, assez technique pour s'optimiser |
+| **Plateforme** | PC en priorité (reine du speedrun, forte en Europe), avec une sortie multiplateforme Sony/Xbox pour les ventes |
+| **Marché cible** | Occident anglophone (Amérique du Nord + Europe de l'Ouest) ; localisation anglaise prioritaire ; Japon écarté |
+| **Format d'une run** | 30 min à 1 h, niveaux courts et segmentés, propices aux tentatives répétées |
+| **Mécaniques** | Forte rejouabilité, profondeur technique, plusieurs catégories de speedrun, chronomètre intégré et classements en ligne |
+| **Univers** | Esthétique contemporaine, dans l'esprit des années 2010, pensée pour le streaming et le partage |
+| **Communauté** | Animation sur le long terme : c'est le facteur le plus discriminant des jeux à forte activité speedrun |
+
+Cette carte d'identité repose toutefois sur un compromis assumé. Les leviers du succès commercial (genre populaire, grand parc installé, licence internationale) ne sont pas exactement ceux du speedrun (game design, profondeur, rejouabilité) : notre jeu doit donc être assez accessible pour séduire le grand public occidental, tout en restant assez profond pour retenir les speedrunners. Le choix du platformer-course sur PC, ouvert au multiplateforme, vise précisément ce point d'équilibre.
+
+Plusieurs limites invitent enfin à la prudence : le jeu de données de ventes s'arrête fin 2016 et ignore la décennie suivante, l'activité Speedrun.com sur-représente le PC et les communautés occidentales déjà installées, et de nombreuses métadonnées (genres, plateformes, localisation) restent lacunaires. Ces réserves n'invalident pas notre profil, mais rappellent qu'il décrit le jeu idéal *au regard de ces données*, et non une vérité absolue du marché.
