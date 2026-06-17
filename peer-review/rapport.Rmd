@@ -466,7 +466,7 @@ nrow(speedrun)-sum(jeux_incomplets$nb_runs)
 
 Dans l'optique de concevoir et de commercialiser le jeu parfait, nous débutons par une étude du marché : quelles plateformes ont généré le plus de ventes à l'échelle mondiale ? Identifier les machines dominantes nous indiquera sur quel support viser pour maximiser l'audience potentielle de notre jeu. Nous supposons que le marché est historiquement écrasé par quelques consoles phares de constructeurs majeurs (Sony, Nintendo), mais nous nous demandons si cette domination se concentre sur une ou deux machines, ou si elle se répartit entre les différentes générations.
 
-```{r}
+```{r, out.width="45%"}
 
 data_group <- videoGameSales %>%
   group_by(Platform)
@@ -495,9 +495,10 @@ ggplot(ventes_par_plateforme,
        y = "Ventes globales (millions)",
        title = "Les 20 Plateformes qui vendent le plus de jeux",
        fill = "Constructeur") +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
   
-  theme_minimal() 
+
 ```
 
 Le marché ne suit pas une logique équilibrée mais une logique de paliers dominée par deux acteurs historiques. Sony s'impose en volume, porté par le succès titanesque de la PS2 et par la présence de toute sa gamme de salon (PS1, PS3, PS4) en haut du classement. Nintendo se distingue lui par l'étendue de son catalogue de machines et une longévité remarquable, là où Sega n'a pas su durer dans le temps. Pour notre jeu, l'enseignement est direct : viser un support à très large parc installé, typiquement une console Sony ou Nintendo de sa génération, conditionne fortement l'audience commerciale atteignable - un lancement sur une plateforme marginale partirait avec un handicap structurel.
@@ -786,7 +787,7 @@ ggplot(sales_long, aes(x = Sales, y = reorder(Genre, Sales), fill = Region)) +
     fill = "Région"
   ) + theme_minimal() +
   theme(
-    axis.text.x = element_text(margin = margin(r = 5), size = 6)
+    axis.text.x = element_text(margin = margin(r = 5), size = 6, angle = 20, hjust = 1)
   )
 ```
 
