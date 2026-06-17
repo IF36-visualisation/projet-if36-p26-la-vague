@@ -106,6 +106,16 @@ dashboardPage(
       tabItem(
         tabName = "ventes",
         
+        box(
+          width = 12,
+          status = "primary",
+          solidHeader = TRUE,
+          title = "Information sur le dataset",
+          p(
+            "Cette page présente une analyse du dataset Video Game Sales contenant les ventes de jeux vidéo jusqu'au 22 décembre 2016. Les filtres permettent d'explorer les résultats selon les genres, les plateformes et les régions."
+          )
+        ),
+        
         fluidRow(
           valueBoxOutput("total_sales_box"),
           valueBoxOutput("nb_games_box"),
@@ -145,6 +155,16 @@ dashboardPage(
       # Page Speedrun SPEEDRUNS
       tabItem(
         tabName = "speedruns",
+        
+        box(
+          width = 12,
+          status = "warning",
+          solidHeader = TRUE,
+          title = "Information sur le dataset",
+          p(
+            "Cette page présente une analyse du dataset Speedrun.com. Les indicateurs et graphiques permettent d'explorer les jeux, genres et plateformes les plus représentés dans la communauté speedrun."
+          )
+        ),
         
         fluidRow(
           valueBoxOutput("nb_runs_box"),

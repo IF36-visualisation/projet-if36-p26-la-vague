@@ -72,6 +72,19 @@ function(input, output, session) {
       platformName = na_if(platformName, "")
     )
   
+  
+  # Palettes de couleurs du rapport
+  
+  palette_plateformes <- c(
+    "Sony" = "#386cb0",
+    "Nintendo" = "#e41a1c",
+    "Microsoft" = "#4daf4a",
+    "Sega" = "#a6cee3",
+    "PC" = "#984ea3",
+    "Atari" = "#ff7f00",
+    "Autre" = "gray70"
+  )
+  
   # Filtres
   
   updateSelectInput(
@@ -194,19 +207,33 @@ function(input, output, session) {
         total = sum(.data[[input$region]], na.rm = TRUE),
         .groups = "drop"
       ) %>%
+      mutate(
+        Constructeur = case_when(
+          Platform %in% c("PS2", "PS3", "PS", "PS4", "PSP", "PSV") ~ "Sony",
+          Platform %in% c("Wii", "DS", "GBA", "3DS", "GB", "NES", "N64", "SNES", "GC", "WiiU") ~ "Nintendo",
+          Platform %in% c("X360", "XB", "XOne") ~ "Microsoft",
+          Platform %in% c("SAT", "GEN", "DC", "SCD") ~ "Sega",
+          Platform == "PC" ~ "PC",
+          Platform == "2600" ~ "Atari",
+          TRUE ~ "Autre"
+        )
+      ) %>%
       arrange(desc(total)) %>%
       slice_head(n = input$top_n) %>%
       ggplot(
         aes(
           x = reorder(Platform, total),
-          y = total
+          y = total,
+          fill = Constructeur
         )
       ) +
-      geom_col(fill = "#4C78A8") +
+      geom_col() +
       coord_flip() +
+      scale_fill_manual(values = palette_plateformes) +
       labs(
         x = "Plateforme",
-        y = "Ventes globale (en millions)"
+        y = "Ventes globales (en millions)",
+        fill = "Constructeur"
       ) +
       theme_minimal()
   })
@@ -228,7 +255,7 @@ function(input, output, session) {
           y = total
         )
       ) +
-      geom_col(fill = "#59A14F") +
+      geom_col(fill = "steelblue") +
       coord_flip() +
       labs(
         x = "Genre",
@@ -253,7 +280,7 @@ function(input, output, session) {
           y = total
         )
       ) +
-      geom_col(fill = "#F28E2B") +
+      geom_col(fill = "steelblue") +
       coord_flip() +
       labs(
         x = "Jeu",
@@ -327,18 +354,56 @@ function(input, output, session) {
     speedrun_filtered() %>%
       filter(!is.na(platformName)) %>%
       count(platformName, name = "nb_runs") %>%
+      mutate(
+        Constructeur = case_when(
+          
+          # Nintendo
+          grepl("Nintendo|Wii|Game Boy|DS|Famicom|Virtual Boy|Switch", platformName) ~ "Nintendo",
+          
+          # Sony
+          grepl("PlayStation|PSN", platformName) ~ "Sony",
+          
+          # Microsoft
+          grepl("Xbox", platformName) ~ "Microsoft",
+          
+          # Sega
+          grepl("Sega|Dreamcast|Game Gear|Genesis|Saturn|SG-1000", platformName) ~ "Sega",
+          
+          # Atari
+          grepl("Atari", platformName) ~ "Atari",
+          
+          # PC
+          platformName %in% c(
+            "PC",
+            "MS-DOS",
+            "Macintosh",
+            "Amiga",
+            "Linux",
+            "MSX",
+            "MSX2",
+            "X68000",
+            "NEC PC-98 series",
+            "NEC PC-88 series"
+          ) ~ "PC",
+          
+          TRUE ~ "Autre"
+        )
+      ) %>%
       arrange(desc(nb_runs)) %>%
       slice_head(n = input$top_n) %>%
       ggplot(
         aes(
           x = nb_runs,
-          y = reorder(platformName, nb_runs)
+          y = reorder(platformName, nb_runs),
+          fill = Constructeur
         )
       ) +
-      geom_col(fill = "darkorange") +
+      geom_col() +
+      scale_fill_manual(values = palette_plateformes) +
       labs(
         x = "Nombre de runs",
-        y = "Plateforme"
+        y = "Plateforme",
+        fill = "Constructeur"
       ) +
       theme_minimal()
   })
@@ -356,7 +421,7 @@ function(input, output, session) {
           y = reorder(genreName, nb_runs)
         )
       ) +
-      geom_col(fill = "darkgreen") +
+      geom_col(fill = "steelblue") +
       labs(
         x = "Nombre de runs",
         y = "Genre"
