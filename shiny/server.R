@@ -35,10 +35,11 @@ function(input, output, session) {
   platforms_data <- platforms_data0
   speedrun <- speedrun0
   
-  speedrun <- speedrun %>% mutate(verifiedDate = as.Date(verifiedDate)) %>%
-    filter(!is.na(verifiedDate), verifiedDate <= as.Date("2016-12-22"))
+  speedrun <- speedrun %>% 
+    mutate(verifiedDate = as.Date(verifiedDate)) %>%
+    filter(!is.na(verifiedDate))
   
-  games_data <- games_data %>% select(gameId,gameName,platforms,genres,releaseDate)
+  games_data <- games_data %>% select(gameId, gameName, genres, releaseDate)
   
   platforms_data <- platforms_data %>% rename(platformName = name)
   
@@ -47,14 +48,12 @@ function(input, output, session) {
   speedrun <- speedrun %>%
     left_join(games_data, by = "gameId") %>%
     rename(
-      platformId = platforms,
       genreId = genres,
       releaseDateGame = releaseDate
     ) %>%
-    separate_rows(platformId, sep = ",") %>%
     separate_rows(genreId, sep = ",") %>%
-    left_join(platforms_data, by = "platformId") %>%
     left_join(genres_data, by = "genreId") %>%
+    left_join(platforms_data, by = c("platform" = "platformId")) %>%
     mutate(dateJeu = dmy(releaseDateGame)) %>%
     select(
       gameName,
@@ -112,7 +111,7 @@ function(input, output, session) {
   )
   
   # Données filtrées ventes
-
+  
   sales_filtered <- reactive({
     
     data <- videoGameSales
@@ -131,7 +130,7 @@ function(input, output, session) {
   })
   
   # Données filtrées speedrun
-
+  
   speedrun_filtered <- reactive({
     
     data <- speedrun
@@ -150,7 +149,7 @@ function(input, output, session) {
   })
   
   # Value Box Ventes
-
+  
   output$total_sales_box <- renderValueBox({
     
     total_sales <- sum(
@@ -196,9 +195,9 @@ function(input, output, session) {
     )
   })
   
-
+  
   # Graphiques des ventes 
-
+  
   output$sales_platform_plot <- renderPlot({
     
     sales_filtered() %>%
@@ -288,13 +287,13 @@ function(input, output, session) {
       ) +
       theme_minimal()
   })
-
+  
   # Value Box Speedrun
   
   output$nb_runs_box <- renderValueBox({
     
     valueBox(
-      value = nrow(speedrun_filtered()),
+      value = n_distinct(speedrun_filtered()$runId),
       subtitle = "Nombre total de runs",
       icon = icon("stopwatch"),
       color = "yellow"
@@ -315,7 +314,8 @@ function(input, output, session) {
     
     best_platform <- speedrun_filtered() %>%
       filter(!is.na(platformName)) %>%
-      count(platformName, name = "nb_runs") %>%
+      group_by(platformName) %>%
+      summarise(nb_runs = n_distinct(runId), .groups = "drop") %>%
       arrange(desc(nb_runs)) %>%
       slice_head(n = 1)
     
@@ -328,11 +328,12 @@ function(input, output, session) {
   })
   
   # Graphiques speedrun SPEEDRUN
-
+  
   output$runs_games_plot <- renderPlot({
     
     speedrun_filtered() %>%
-      count(gameName, name = "nb_runs") %>%
+      group_by(gameName) %>%
+      summarise(nb_runs = n_distinct(runId), .groups = "drop") %>%
       arrange(desc(nb_runs)) %>%
       slice_head(n = input$top_n) %>%
       ggplot(
@@ -353,7 +354,8 @@ function(input, output, session) {
     
     speedrun_filtered() %>%
       filter(!is.na(platformName)) %>%
-      count(platformName, name = "nb_runs") %>%
+      group_by(platformName) %>%
+      summarise(nb_runs = n_distinct(runId), .groups = "drop") %>%
       mutate(
         Constructeur = case_when(
           
@@ -412,7 +414,8 @@ function(input, output, session) {
     
     speedrun_filtered() %>%
       filter(!is.na(genreName)) %>%
-      count(genreName, name = "nb_runs") %>%
+      group_by(genreName) %>%
+      summarise(nb_runs = n_distinct(runId), .groups = "drop") %>%
       arrange(desc(nb_runs)) %>%
       slice_head(n = input$top_n) %>%
       ggplot(
@@ -430,7 +433,7 @@ function(input, output, session) {
   })
   
   # Gestion du reset des filtres
-
+  
   observeEvent(input$reset_filters, {
     
     updateSelectInput(
