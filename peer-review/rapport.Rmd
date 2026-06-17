@@ -1176,6 +1176,7 @@ Nous cherchons ici à savoir si les jeux les plus vendus en Europe sont aussi ce
 Pour répondre à cette question, nous comparons les ventes européennes (`EU_Sales`) et le nombre de runs speedrun (`nb_runs`) à l’aide d’un nuage de points en échelle logarithmique.
 
 ```{r, fig.width=10, fig.height=6, warning=FALSE, message=FALSE}
+# Préparation des données
 quadrant_data <- merged_games %>%
   filter(
     EU_Sales > 0,
@@ -1184,7 +1185,7 @@ quadrant_data <- merged_games %>%
   mutate(
     median_sales = median(EU_Sales, na.rm = TRUE),
     median_runs = median(nb_runs, na.rm = TRUE),
-
+    
     quadrant = case_when(
       EU_Sales >= median_sales & nb_runs >= median_runs ~ "Très vendus et très speedrunnés",
       EU_Sales >= median_sales & nb_runs < median_runs ~ "Très vendus mais peu speedrunnés",
@@ -1193,15 +1194,30 @@ quadrant_data <- merged_games %>%
     )
   )
 
+# On affiche seulement les labels des jeux peu vendus mais très speedrunnés
 label_games <- quadrant_data %>%
-  filter(quadrant != "Faibles ventes + faible activité") %>%
-  arrange(desc(EU_Sales + nb_runs / 100)) %>%
-  slice_head(n = 18)
+  filter(quadrant == "Peu vendus mais très speedrunnés") %>%
+  arrange(desc(nb_runs)) %>%
+  slice_head(n = 10)
 
+# Palette personnalisée
+palette_quadrants <- c(
+  "Faibles ventes + faible activité" = "#BDBDBD",
+  "Peu vendus mais très speedrunnés" = "#F28E2B",
+  "Très vendus et très speedrunnés" = "#2CBCC3",
+  "Très vendus mais peu speedrunnés" = "#B07CC6"
+)
+
+# Graphique
 ggplot(quadrant_data,
-       aes(x = EU_Sales, y = nb_runs, color = quadrant)) +
+       aes(x = EU_Sales,
+           y = nb_runs,
+           color = quadrant)) +
   
-  geom_point(alpha = 0.45, size = 2) +
+  geom_point(
+    alpha = 0.5,
+    size = 2
+  ) +
   
   geom_vline(
     xintercept = median(quadrant_data$EU_Sales, na.rm = TRUE),
@@ -1221,8 +1237,15 @@ ggplot(quadrant_data,
     data = label_games,
     aes(label = Name),
     size = 3.2,
+    color = "#F28E2B",
+    box.padding = 0.5,
+    point.padding = 0.3,
     max.overlaps = 25,
     show.legend = FALSE
+  ) +
+  
+  scale_color_manual(
+    values = palette_quadrants
   ) +
   
   scale_x_log10() +
@@ -1239,8 +1262,11 @@ ggplot(quadrant_data,
   theme_minimal() +
   
   theme(
-    legend.position = "bottom"
+    legend.position = "bottom",
+    legend.title = element_text(face = "bold"),
+    plot.title = element_text(face = "bold")
   )
+
 ```
 
 Le graphique met en évidence une tendance positive globale : les jeux les plus vendus semblent également générer davantage de runs speedrun. Cette relation reste toutefois relativement modérée et présente plusieurs exceptions notables.
@@ -1657,7 +1683,7 @@ Après avoir identifié certains jeux particulièrement populaires auprès des s
 
 > Les communautés les plus investies devraient présenter un nombre moyen de runs par joueur particulièrement élevé.
 
->>>>>>> 37d840435149025fde032e9bf0a4b74c29e1fa4f
+
 Pour répondre à cette question, nous calculons le ratio suivant :
 
 \[
