@@ -218,9 +218,9 @@ Les sous-groupes exploitables sont :
 
 \newpage
 
-# Annexes
+# Annexe {.unlisted .unnumbered}
 
-### Annexe A - Correspondance des codes de plateformes
+## Annexe A - Correspondance des codes de plateformes {.unlisted .unnumbered}
 
 Dans le dataset *Video Game Sales*, la variable `Platform` est codée sous forme d’abréviations. Afin de faciliter la lecture du rapport, le tableau ci-dessous présente la correspondance entre les codes utilisés et le nom complet des plateformes.
 
@@ -2013,7 +2013,13 @@ Ces résultats montrent qu’il n’existe probablement pas une caractéristique
 
 Nos analyses montrent que le succès commercial ou les bonnes notes critiques jouent un rôle, mais ne suffisent pas à expliquer l’engagement des speedrunners. Certains blockbusters très populaires génèrent finalement peu d’activité, tandis que des jeux plus confidentiels développent des communautés extrêmement actives et investies.
 
-Les résultats mettent surtout en évidence plusieurs caractéristiques communes aux jeux les plus speedrunnés : - un gameplay dynamique et technique ; - une forte rejouabilité ; - des mécaniques permettant l’optimisation et la créativité ; - plusieurs catégories ou stratégies de speedrun ; - une communauté engagée sur le long terme.
+Les résultats mettent surtout en évidence plusieurs caractéristiques communes aux jeux les plus speedrunnés : 
+
+- un gameplay dynamique et technique ;
+- une forte rejouabilité ; 
+- des mécaniques permettant l’optimisation et la créativité ;
+- plusieurs catégories ou stratégies de speedrun ;
+- une communauté engagée sur le long terme.
 
 Concevoir un jeu adapté au speedrun ne consiste pas uniquement à produire un jeu populaire, mais surtout un jeu profond, flexible et agréable à maîtriser. Le speedrun apparaît donc avant tout comme une question de game design et d’expérience de jeu, bien plus que de succès commercial pur.
 
