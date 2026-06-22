@@ -1798,7 +1798,7 @@ Le tableau ci-dessous présente la répartition des principales tâches réalis�
 ### Répartition des contributions
 
 | Membre | Contributions |
-|-----------------|-------------------------------------------------------|
+|------------------|------------------------------------------------------|
 | **Daria** | Questions 3, 5, 6 et 16 à 21 ; couplage des données. |
 | **Nathan** | Rédaction du README ; questions 1 et 7 ; développement de l'application Shiny. |
 | **Baptiste** | Questions 4 et 9 à 15 ; rédaction de la conclusion finale. |
