@@ -220,48 +220,6 @@ Les sous-groupes exploitables sont :
 
 \newpage
 
-# Annexe {.unlisted .unnumbered}
-
-## Annexe A - Correspondance des codes de plateformes {.unlisted .unnumbered}
-
-Dans le dataset *Video Game Sales*, la variable `Platform` est codée sous forme d’abréviations. Afin de faciliter la lecture du rapport, le tableau ci-dessous présente la correspondance entre les codes utilisés et le nom complet des plateformes.
-
-| Code | Plateforme                          |
-|------|-------------------------------------|
-| 2600 | Atari 2600                          |
-| 3DO  | 3DO Interactive Multiplayer         |
-| 3DS  | Nintendo 3DS                        |
-| DC   | Dreamcast                           |
-| DS   | Nintendo DS                         |
-| GB   | Game Boy                            |
-| GBA  | Game Boy Advance                    |
-| GC   | Nintendo GameCube                   |
-| GEN  | Sega Genesis / Mega Drive           |
-| GG   | Game Gear                           |
-| N64  | Nintendo 64                         |
-| NES  | Nintendo Entertainment System       |
-| NG   | Neo Geo                             |
-| PC   | PC                                  |
-| PCFX | PC-FX                               |
-| PS   | PlayStation                         |
-| PS2  | PlayStation 2                       |
-| PS3  | PlayStation 3                       |
-| PS4  | PlayStation 4                       |
-| PSP  | PlayStation Portable                |
-| PSV  | PlayStation Vita                    |
-| SAT  | Sega Saturn                         |
-| SCD  | Sega CD                             |
-| SNES | Super Nintendo Entertainment System |
-| TG16 | TurboGrafx-16                       |
-| WS   | WonderSwan                          |
-| Wii  | Nintendo Wii                        |
-| WiiU | Nintendo Wii U                      |
-| X360 | Xbox 360                            |
-| XB   | Xbox                                |
-| XOne | Xbox One                            |
-
-\newpage
-
 # Analyse des ventes
 
 ```{r,include=FALSE}
@@ -804,7 +762,7 @@ Pour notre jeu, l'enseignement est qu'un succès mondial ne se décrète pas par
 
 \newpage
 
-## Conclusion
+## Conclusion {.unlisted .unnumbered}
 
 Cette première partie nous a permis de mieux comprendre le marché dans lequel notre jeu devra se lancer. Plusieurs idées importantes en ressortent. Le marché est largement dominé par deux constructeurs : Sony et Nintendo. Leurs consoles, très répandues, concentrent la plupart des ventes. Sortir notre jeu sur une de ces plateformes est donc un bon moyen de toucher un large public.
 
@@ -1103,7 +1061,7 @@ Le treemap confirme la domination de deux blocs comparables, les Amériques et l
 
 \newpage
 
-## Conclusion
+## Conclusion {.unlisted .unnumbered}
 
 À travers nos analyses, nous avons dégagé plusieurs caractéristiques que devrait réunir notre jeu pour maximiser ses chances d'être speedrunné :
 
@@ -1737,7 +1695,7 @@ Ces résultats montrent qu’il n’existe probablement pas une caractéristique
 
 \newpage
 
-## Conclusion
+## Conclusion {.unlisted .unnumbered}
 
 Nos analyses montrent que le succès commercial ou les bonnes notes critiques jouent un rôle, mais ne suffisent pas à expliquer l’engagement des speedrunners. Certains blockbusters très populaires génèrent finalement peu d’activité, tandis que des jeux plus confidentiels développent des communautés extrêmement actives et investies.
 
@@ -1779,28 +1737,72 @@ Cette carte d'identité repose toutefois sur un compromis assumé. Les leviers d
 
 Plusieurs limites invitent enfin à la prudence : le jeu de données de ventes s'arrête fin 2016 et ignore la décennie suivante, l'activité Speedrun.com sur-représente le PC et les communautés occidentales déjà installées, et de nombreuses métadonnées (genres, plateformes, localisation) restent lacunaires. Ces réserves n'invalident pas notre profil, mais rappellent qu'il décrit le jeu idéal *au regard de ces données*, et non une vérité absolue du marché.
 
-## Ressentis personnels
+## Ressentis personnels {.unlisted .unnumbered}
 
 **Daria :** J’ai beaucoup apprécié travailler sur ce projet. J’ai appris à utiliser R, un langage très différent de ceux que j’avais abordés jusqu’à présent. Au-delà de cet apprentissage, la compétence principale que je retiens est l’utilisation de **Git**. Bien que j’en aie déjà entendu parler, je ne l’avais jamais utilisé en pratique. Malgré quelques merges ratées au début, j’ai beaucoup progressé et je suis convaincue que cette compétence me sera utile tout au long de ma carrière. En revanche, en raison de la répartition des tâches au sein du groupe, je n’ai pas eu l’occasion de travailler sur la partie **Shiny**, un aspect qu’il aurait été intéressant de découvrir.
 
 **Nathan :** J’ai globalement apprécié ce projet, même si le choix des données ne correspondait pas, au départ, à un domaine dans lequel je souhaitais particulièrement me plonger. Il m’a permis de vivre une première véritable expérience de manipulation et d’analyse de données, tout en découvrant le langage R et son écosystème, j’ai également trouvé intéressant de développer un dashboard avec Shiny, une technologie différente des frameworks web que je connais. Avec plus de temps, j’aurais aimé approfondir la création de visualisations plus complexes, au-delà des graphiques simples comme les graphiques en barres, afin de proposer une analyse encore plus riche et plus poussée.
 
+**Baptiste** : J'ai beaucoup apprécié ce projet, qui m'a permis de progresser sur R et plus particulièrement sur ggplot2 et la grammaire des graphiques. La compétence principale que je retiens est la capacité à construire un raisonnement complet autour d'un Dataset, où chaque graphique répond à une question et en soulève une nouvelle, plutôt que d'empiler des figures sans fil conducteur. Avec plus de temps, j'aurais aimé approfondir le couplage entre les deux jeux de données afin d'en tirer des conclusions plus robustes.
+
 \newpage
 
-# Annexe – Répartition des contributions
+# Annexes
+
+## Annexe A - Correspondance des codes de plateformes {.unlisted .unnumbered}
+
+Dans le dataset *Video Game Sales*, la variable `Platform` est codée sous forme d’abréviations. Afin de faciliter la lecture du rapport, le tableau ci-dessous présente la correspondance entre les codes utilisés et le nom complet des plateformes.
+
+| Code | Plateforme                          |
+|------|-------------------------------------|
+| 2600 | Atari 2600                          |
+| 3DO  | 3DO Interactive Multiplayer         |
+| 3DS  | Nintendo 3DS                        |
+| DC   | Dreamcast                           |
+| DS   | Nintendo DS                         |
+| GB   | Game Boy                            |
+| GBA  | Game Boy Advance                    |
+| GC   | Nintendo GameCube                   |
+| GEN  | Sega Genesis / Mega Drive           |
+| GG   | Game Gear                           |
+| N64  | Nintendo 64                         |
+| NES  | Nintendo Entertainment System       |
+| NG   | Neo Geo                             |
+| PC   | PC                                  |
+| PCFX | PC-FX                               |
+| PS   | PlayStation                         |
+| PS2  | PlayStation 2                       |
+| PS3  | PlayStation 3                       |
+| PS4  | PlayStation 4                       |
+| PSP  | PlayStation Portable                |
+| PSV  | PlayStation Vita                    |
+| SAT  | Sega Saturn                         |
+| SCD  | Sega CD                             |
+| SNES | Super Nintendo Entertainment System |
+| TG16 | TurboGrafx-16                       |
+| WS   | WonderSwan                          |
+| Wii  | Nintendo Wii                        |
+| WiiU | Nintendo Wii U                      |
+| X360 | Xbox 360                            |
+| XB   | Xbox                                |
+| XOne | Xbox One                            |
 
 Le tableau ci-dessous présente la répartition des principales tâches réalisées par chaque membre du groupe au cours du projet. Bien que certaines activités aient été effectuées collectivement (réunions, validation des résultats et préparation de la présentation orale), chaque membre a été responsable des éléments indiqués ci-dessous.
 
-## Répartition des contributions
+\newpage
+
+## Annexe B - Travail effectué {.unlisted .unnumbered}
+
+### Répartition des contributions
 
 | Membre | Contributions |
-|---------------|---------------------------------------------------------|
+|-----------------|-------------------------------------------------------|
 | **Daria** | Questions 3, 5, 6 et 16 à 21 ; couplage des données. |
 | **Nathan** | Rédaction du README ; questions 1 et 7 ; développement de l'application Shiny. |
 | **Baptiste** | Questions 4 et 9 à 15 ; rédaction de la conclusion finale. |
 | **Côme** | Question 2 ; réalisation du tableau de bord Power BI. |
 
-## Travail réalisé en commun
+### Travail réalisé en commun
 
 Les tâches suivantes ont été réalisées collectivement par l'ensemble de l'équipe :
 
