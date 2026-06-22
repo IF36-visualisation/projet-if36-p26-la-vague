@@ -19,8 +19,6 @@ output:
 
 \newpage
 
-# Projet - La Vague
-
 # Introduction {#introduction}
 
 Qui n’a jamais débattu avec ses amis pour savoir quel jeu vidéo est le meilleur de tous les temps ? Entre les fans de LOL *(quelle idée…)*, les nostalgiques de Mario et les adeptes de Minecraft, les opinions sont souvent… très tranchées.
