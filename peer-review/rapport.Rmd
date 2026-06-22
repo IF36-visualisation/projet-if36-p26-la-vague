@@ -19,6 +19,8 @@ output:
 
 \newpage
 
+# Projet - La Vague
+
 # Introduction {#introduction}
 
 Qui n’a jamais débattu avec ses amis pour savoir quel jeu vidéo est le meilleur de tous les temps ? Entre les fans de LOL *(quelle idée…)*, les nostalgiques de Mario et les adeptes de Minecraft, les opinions sont souvent… très tranchées.
@@ -53,7 +55,7 @@ Cependant, le jeu de données présente de nombreuses valeurs manquantes, notamm
 ### Dictionnaire de variables et qualité attendue
 
 | Colonne | Nature | Type | \% NA | Uniques | Exemples |
-|----|----|----|----|----|----|
+|------------|------------|------------|------------|------------|------------|
 | Name | qualitative nominale (texte) | object | 0.02% | 11 563 | Wii Sports; Super Mario Bros. |
 | Platform | qualitative nominale (catégorie) | object | 0.00% | 31 | Wii; NES |
 | Year_of_Release | quantitative discrète (année) | float64 | 1.61% | \- | 2006.0; 1985.0 |
@@ -104,7 +106,7 @@ Ce dataset recense les jeux référencés sur [**Speedrun.com**](https://www.spe
 Le dataset est composé de **4 fichiers CSV** reliés entre eux par des identifiants communs :
 
 | Fichier | Dimensions | Unité d'observation | Description |
-|----|----|----|----|
+|------------------|------------------|------------------|------------------|
 | *games-data.csv* | (43 663 × 6) | Jeu | Métadonnées de chaque jeu référencé sur Speedrun.com |
 | *leaderboards-data.csv* | (2 232 884 × 3) | Run classée | Runs validées et classées sur les leaderboards |
 | *platforms-data.csv* | (213 × 3) | Plateforme | Table de référence des plateformes (consoles, PC, supports mobiles) |
@@ -121,7 +123,7 @@ Fichier central du dataset. Chaque ligne correspond à un jeu unique référenc�
 #### Dictionnaire de variables
 
 | Colonne | Nature | Type | \% NA | Uniques | Exemples |
-|----|----|----|----|----|----|
+|------------|------------|------------|------------|------------|------------|
 | gameId | qualitative nominale (identifiant unique) | string | 0.00% | 43 662 | j1n8nj91 ; m1zqmo76 |
 | gameName | qualitative nominale (texte) | string | 0.00% | 43 639 | Super Mario 64 ; Celeste |
 | releaseDate | quantitative discrète (date) | string | 0.00% | 9 958 | 01/11/1971 ; 01/01/2020 |
@@ -143,7 +145,7 @@ Fichier central du dataset. Chaque ligne correspond à un jeu unique référenc�
 Contient toutes les runs **validées** et classées sur les leaderboards Speedrun.com. C'est le fichier de référence pour mesurer l'activité communautaire autour de chaque jeu.
 
 | Colonne | Nature | Type | \% NA | Uniques | Exemples |
-|----|----|----|----|----|----|
+|------------|------------|------------|------------|------------|------------|
 | runId | qualitative nominale (identifiant unique) | string | 0.00% | 2 232 884 | zpg4gdnz |
 | gameId | qualitative nominale (identifiant vers games-data) | string | 0.00% | 42 278 | j1n8nj91 |
 | players | qualitative nominale (liste d'identifiants de joueurs) | string | 3.90% | 480 808 | 8d4kdg58 |
@@ -163,7 +165,7 @@ Contient toutes les runs **validées** et classées sur les leaderboards Speedru
 Liste des plateformes de jeu (consoles, ordinateurs, supports mobiles) référencées sur Speedrun.com.
 
 | Colonne | Nature | Type | \% NA | Uniques | Exemples |
-|----|----|----|----|----|----|
+|------------|------------|------------|------------|------------|------------|
 | platformId | qualitative nominale (identifiant unique) | string | 0.00% | 213 | jm951reo |
 | name | qualitative nominale (texte) | string | 0.00% | 213 | 2DS ; Nintendo Switch ; PC |
 | releaseYear | quantitative discrète (année) | int64 | 0.00% | 53 | 2013 ; 2017 |
@@ -175,7 +177,7 @@ Liste des plateformes de jeu (consoles, ordinateurs, supports mobiles) référen
 Liste des genres de jeu référencés sur Speedrun.com.
 
 | Colonne | Nature | Type | \% NA | Uniques | Exemples |
-|----|----|----|----|----|----|
+|------------|------------|------------|------------|------------|------------|
 | genreId | qualitative nominale (identifiant unique) | string | 0.00% | 2 380 | l2kodwn1 |
 | name | qualitative nominale (texte) | string | 0.00% | 2 380 | Platformer ; RPG ; .io Game |
 
@@ -1283,6 +1285,7 @@ Le graphique met en évidence une tendance positive globale : les jeux les plus 
 En effet, certains jeux très populaires commercialement possèdent une activité speedrun limitée, tandis que d’autres jeux aux ventes plus modestes développent des communautés particulièrement actives. Ces résultats suggèrent que le succès commercial favorise la visibilité d’un jeu, mais qu’il ne suffit pas à expliquer l’intérêt des speedrunners.
 
 \newpage
+
 ## 17. Est ce que genre les plus vendues sotn celles qu'on speedrun le plus?
 
 Comme dans les parties précédentes nous cherchons maintenant à savoir si les genres les plus populaires commercialement sont également ceux qui génèrent le plus d’activité speedrun.
@@ -1363,8 +1366,8 @@ Le graphique met en évidence une corrélation positive globale : les genres les
 Ces résultats suggèrent donc que la popularité d’un genre favorise l’activité speedrun, mais que certaines caractéristiques de gameplay jouent également un rôle important.
 
 \newpage
-## 18. Est ce que les plateformes vendues sotn celles qu'on speedrun le plus?
 
+## 18. Est ce que les plateformes vendues sotn celles qu'on speedrun le plus?
 
 Après avoir étudié les genres, nous cherchons maintenant à savoir si les plateformes les plus populaires commercialement sont également celles qui génèrent le plus d’activité speedrun.
 
@@ -1515,8 +1518,6 @@ Ces résultats suggèrent que le succès d’un jeu auprès des speedrunners ne 
 
 \newpage
 
-
-
 ## 20. Les jeux les mieux notés attirent-ils davantage les speedrunners ?
 
 Après avoir étudié les genres les plus populaires auprès des speedrunners, nous cherchons maintenant à savoir si les jeux les mieux notés attirent également davantage d’activité speedrun.
@@ -1524,7 +1525,6 @@ Après avoir étudié les genres les plus populaires auprès des speedrunners, n
 > Les jeux bénéficiant de bonnes notes critiques devraient globalement générer plus de speedruns grâce à leur gameplay et leur rejouabilité.
 
 Pour répondre à cette question, nous comparons les notes critiques (`Critic_Score`) au nombre de runs speedrun (`nb_runs`) à l’aide d’un nuage de points. Afin d’améliorer la lisibilité du graphique, seuls les jeux possédant au moins 10 runs ont été conservés.
-
 
 ```{r, fig.width=10, fig.height=6, warning=FALSE, message=FALSE}
 score_speedrun <- merged_games %>%
@@ -1602,8 +1602,8 @@ Des jeux comme *BioShock* ou *Tekken 3* possèdent peu d’activité speedrun ma
 
 Ces résultats suggèrent que la qualité critique joue un rôle, mais qu’elle ne suffit pas à expliquer le succès d’un jeu auprès des speedrunners.
 
-
 \newpage
+
 ## 21. Existe-t-il une “recette parfaite” du jeu speedrunnable ?
 
 Après avoir étudié séparément les ventes, les notes critiques, les genres ou encore l’investissement des communautés, nous cherchons désormais à identifier le profil moyen des jeux les plus populaires auprès des speedrunners.
@@ -1766,7 +1766,7 @@ Le **couplage des deux sources** a enfin montré que succès commercial et activ
 De cette synthèse, nous tirons la carte d'identité du jeu à concevoir :
 
 | Critère | Choix retenu |
-|----|----|
+|------------------------------------|------------------------------------|
 | **Genre** | Platformer nerveux à dimension course/action : assez grand public pour vendre, assez technique pour s'optimiser |
 | **Plateforme** | PC en priorité (reine du speedrun, forte en Europe), avec une sortie multiplateforme Sony/Xbox pour les ventes |
 | **Marché cible** | Occident anglophone (Amérique du Nord + Europe de l'Ouest) ; localisation anglaise prioritaire ; Japon écarté |
@@ -1783,9 +1783,9 @@ Plusieurs limites invitent enfin à la prudence : le jeu de données de ventes s
 
 **Daria :** J’ai beaucoup apprécié travailler sur ce projet. J’ai appris à utiliser R, un langage très différent de ceux que j’avais abordés jusqu’à présent. Au-delà de cet apprentissage, la compétence principale que je retiens est l’utilisation de **Git**. Bien que j’en aie déjà entendu parler, je ne l’avais jamais utilisé en pratique. Malgré quelques merges ratées au début, j’ai beaucoup progressé et je suis convaincue que cette compétence me sera utile tout au long de ma carrière. En revanche, en raison de la répartition des tâches au sein du groupe, je n’ai pas eu l’occasion de travailler sur la partie **Shiny**, un aspect qu’il aurait été intéressant de découvrir.
 
+**Nathan :** J’ai globalement apprécié ce projet, même si le choix des données ne correspondait pas, au départ, à un domaine dans lequel je souhaitais particulièrement me plonger. Il m’a permis de vivre une première véritable expérience de manipulation et d’analyse de données, tout en découvrant le langage R et son écosystème, j’ai également trouvé intéressant de développer un dashboard avec Shiny, une technologie différente des frameworks web que je connais. Avec plus de temps, j’aurais aimé approfondir la création de visualisations plus complexes, au-delà des graphiques simples comme les graphiques en barres, afin de proposer une analyse encore plus riche et plus poussée.
 
 \newpage
-
 
 # Annexe – Répartition des contributions
 
@@ -1793,21 +1793,17 @@ Le tableau ci-dessous présente la répartition des principales tâches réalis�
 
 ## Répartition des contributions
 
-| Membre       | Contributions                                                                  |
-| ------------ | ------------------------------------------------------------------------------ |
-| **Daria**    | Questions 3, 5, 6 et 16 à 21 ; couplage des données.                           |
-| **Nathan**   | Rédaction du README ; questions 1 et 7 ; développement de l'application Shiny. |
-| **Baptiste** | Questions 4 et 9 à 15 ; rédaction de la conclusion finale.                     |
-| **Côme**     | Question 2 ; réalisation du tableau de bord Power BI.                          |
+| Membre | Contributions |
+|---------------|---------------------------------------------------------|
+| **Daria** | Questions 3, 5, 6 et 16 à 21 ; couplage des données. |
+| **Nathan** | Rédaction du README ; questions 1 et 7 ; développement de l'application Shiny. |
+| **Baptiste** | Questions 4 et 9 à 15 ; rédaction de la conclusion finale. |
+| **Côme** | Question 2 ; réalisation du tableau de bord Power BI. |
 
 ## Travail réalisé en commun
 
 Les tâches suivantes ont été réalisées collectivement par l'ensemble de l'équipe :
 
-* Choix du thème et du jeu de données.
-* Rédaction du compte rendu.
-* Préparation et présentation de l'oral.
-
-
-
-
+- Choix du thème et du jeu de données.
+- Rédaction du compte rendu.
+- Préparation et présentation de l'oral.
