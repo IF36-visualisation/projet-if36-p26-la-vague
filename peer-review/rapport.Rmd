@@ -1778,3 +1778,36 @@ De cette synthèse, nous tirons la carte d'identité du jeu à concevoir :
 Cette carte d'identité repose toutefois sur un compromis assumé. Les leviers du succès commercial (genre populaire, grand parc installé, licence internationale) ne sont pas exactement ceux du speedrun (game design, profondeur, rejouabilité) : notre jeu doit donc être assez accessible pour séduire le grand public occidental, tout en restant assez profond pour retenir les speedrunners. Le choix du platformer-course sur PC, ouvert au multiplateforme, vise précisément ce point d'équilibre.
 
 Plusieurs limites invitent enfin à la prudence : le jeu de données de ventes s'arrête fin 2016 et ignore la décennie suivante, l'activité Speedrun.com sur-représente le PC et les communautés occidentales déjà installées, et de nombreuses métadonnées (genres, plateformes, localisation) restent lacunaires. Ces réserves n'invalident pas notre profil, mais rappellent qu'il décrit le jeu idéal *au regard de ces données*, et non une vérité absolue du marché.
+
+## Ressentis personnels
+
+**Daria :** J’ai beaucoup apprécié travailler sur ce projet. J’ai appris à utiliser R, un langage très différent de ceux que j’avais abordés jusqu’à présent. Au-delà de cet apprentissage, la compétence principale que je retiens est l’utilisation de **Git**. Bien que j’en aie déjà entendu parler, je ne l’avais jamais utilisé en pratique. Malgré quelques merges ratées au début, j’ai beaucoup progressé et je suis convaincue que cette compétence me sera utile tout au long de ma carrière. En revanche, en raison de la répartition des tâches au sein du groupe, je n’ai pas eu l’occasion de travailler sur la partie **Shiny**, un aspect qu’il aurait été intéressant de découvrir.
+
+
+\newpage
+
+
+# Annexe – Répartition des contributions
+
+Le tableau ci-dessous présente la répartition des principales tâches réalisées par chaque membre du groupe au cours du projet. Bien que certaines activités aient été effectuées collectivement (réunions, validation des résultats et préparation de la présentation orale), chaque membre a été responsable des éléments indiqués ci-dessous.
+
+## Répartition des contributions
+
+| Membre       | Contributions                                                                  |
+| ------------ | ------------------------------------------------------------------------------ |
+| **Daria**    | Questions 3, 5, 6 et 16 à 21 ; couplage des données.                           |
+| **Nathan**   | Rédaction du README ; questions 1 et 7 ; développement de l'application Shiny. |
+| **Baptiste** | Questions 4 et 9 à 15 ; rédaction de la conclusion finale.                     |
+| **Côme**     | Question 2 ; réalisation du tableau de bord Power BI.                          |
+
+## Travail réalisé en commun
+
+Les tâches suivantes ont été réalisées collectivement par l'ensemble de l'équipe :
+
+* Choix du thème et du jeu de données.
+* Rédaction du compte rendu.
+* Préparation et présentation de l'oral.
+
+
+
+
