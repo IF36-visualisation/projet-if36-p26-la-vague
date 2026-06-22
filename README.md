@@ -1,3 +1,9 @@
+# Projet - La Vague
+
+- Lien d'accès au dashboard Shiny : [https://if36.nnicart.com](https://if36.nnicart.com)
+
+> Attention : le chargement de l'application peut prendre jusqu'à plusieurs dizaines de secondes.
+
 # Table des matières
 
 - [Introduction](#introduction)
